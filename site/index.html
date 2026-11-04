@@ -491,15 +491,14 @@
     </section>
 
     <footer class="foot foot--play" id="play">
-      <section class="rf" data-rockfall data-rf-state="closed" aria-labelledby="rf-title">
+      <section class="rf is-open" data-rockfall data-rf-state="ready" aria-labelledby="rf-title">
         <div class="rf__intro">
           <div class="rf__copy">
             <h3 class="rf__lead" id="rf-title">Made it this far? Take a little break.</h3>
             <p class="rf__sub">Let&rsquo;s see how long you can survive. <span data-rf-besthint></span></p>
           </div>
-          <button type="button" class="rf__cta" data-rf-open aria-expanded="false" aria-controls="rf-stage">Play ROCKFALL <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h11M11 5l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         </div>
-        <div class="rf__stage" id="rf-stage" data-rf-stage aria-hidden="true">
+        <div class="rf__stage" id="rf-stage" data-rf-stage>
           <div class="rf__clip">
             <div class="rf__arena" data-rf-arena>
               <canvas class="rf__canvas" data-rf-canvas role="img" aria-label="ROCKFALL game arena. Move a pointer or finger to dodge the falling rocks."></canvas>
@@ -516,33 +515,6 @@
           </div>
         </div>
       </section>
-      <div class="play">
-        <div class="play__arena" data-play-arena aria-label="Playground: drag the pieces around">
-          <p class="play__hint">I play any sport I can get my hands on. Grab something and throw it.</p>
-        </div>
-        <div class="play__game rps" data-rps>
-          <div class="rps__modes" role="radiogroup" aria-label="Match length">
-            <button type="button" role="radio" aria-checked="true" data-rps-mode="3">Best of 3</button>
-            <button type="button" role="radio" aria-checked="false" data-rps-mode="5">Best of 5</button>
-          </div>
-          <div class="rps__board" aria-live="off">
-            <div class="rps__side"><span class="rps__who">You</span><b data-rps-you>0</b></div>
-            <div class="rps__stage">
-              <span class="rps__hand rps__hand--you" data-rps-yours aria-hidden="true"></span>
-              <span class="rps__vs" aria-hidden="true">vs</span>
-              <span class="rps__hand rps__hand--me" data-rps-mine aria-hidden="true"></span>
-            </div>
-            <div class="rps__side"><span class="rps__who">Chima</span><b data-rps-me>0</b></div>
-          </div>
-          <div class="rps__picks" role="group" aria-label="Choose your move">
-            <button type="button" class="rps__pick" data-rps-pick="rock" aria-label="Rock"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M13 31c-3-4-3-10 1-13l7-6c3-2 7-1 9 2l5 1c4 1 6 5 5 9l-2 8c-1 3-4 5-7 5h-9c-3 0-6-2-9-6z"/><path d="M21 14l4 6M29 17l-2 6"/></svg><span>Rock</span></button>
-            <button type="button" class="rps__pick" data-rps-pick="paper" aria-label="Paper"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M12 7h18l8 8v26a2 2 0 0 1-2 2H12a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2z"/><path d="M30 7v8h8M16 24h16M16 30h16M16 36h10"/></svg><span>Paper</span></button>
-            <button type="button" class="rps__pick" data-rps-pick="scissors" aria-label="Scissors"><svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="14" cy="35" r="6"/><circle cx="34" cy="35" r="6"/><path d="M18 30L33 6M30 30L15 6"/></svg><span>Scissors</span></button>
-          </div>
-          <p class="play__msg" role="status" aria-live="polite" data-rps-msg>Best of 3. First to 2 wins. Pick your move.</p>
-          <button type="button" class="play__again" data-rps-again hidden>Rematch</button>
-        </div>
-      </div>
       <a class="foot__hello" href="mailto:ajike2116@gmail.com" data-sound="click"><span>Say hello.</span><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6 14 14 6M7.5 6H14v6.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
       <div class="foot__bar">
         <span>&copy; 2026 Chimaobi Ajike, Lagos, Nigeria</span>

@@ -277,7 +277,7 @@
     function toast(t) { var el = document.createElement('div'); el.className = 'rf__toast'; el.textContent = t; arena.appendChild(el); setTimeout(function () { el.remove(); }, 1400); }
     function overlayReady() {
       overlay.hidden = false; overlay.className = 'rf__overlay';
-      overlay.innerHTML = '<div class="rf__card"><p class="rf__kicker">Mini game</p><h3 class="rf__title">ROCKFALL</h3><p class="rf__tag">How long can you survive?</p><p class="rf__how">Move your cursor, or drag your finger, to dodge the rocks.</p><button type="button" class="rf__btn" data-rf-start>Start Game</button>' + (best.score ? '<p class="rf__best">Your best: ' + best.score + '</p>' : '') + '</div>';
+      overlay.innerHTML = '<div class="rf__card"><p class="rf__kicker">Mini game</p><h3 class="rf__title">ROCKFALL</h3><p class="rf__tag">How long can you survive?</p><p class="rf__how">Move your cursor, or drag your finger, to dodge the rocks.</p><button type="button" class="rf__btn" data-rf-start>Start Game</button></div>';
       overlay.querySelector('[data-rf-start]').addEventListener('click', start);
     }
     function overlayOver(t, score) {
@@ -315,23 +315,22 @@
     });
 
     // ---------- open, close, pause, resize ----------
+    // The arena is always there: it simply wakes up when the footer scrolls into view.
     function setOpen(v) {
-      open = v; cta.setAttribute('aria-expanded', v ? 'true' : 'false'); root.classList.toggle('is-open', v);
-      stage.inert = !v; stage.setAttribute('aria-hidden', v ? 'false' : 'true');
+      open = v; root.classList.toggle('is-open', v);
       if (v) {
         state = state === 'idle' ? 'ready' : state;
-        setTimeout(function () { resize(); if (!g) newRun(); if (state === 'ready') overlayReady(); hud(); loop(); var f = overlay.querySelector('[data-rf-start]'); if (f && !calm) { try { f.focus({ preventScroll: true }); } catch (e) {} } }, calm ? 0 : 520);
-        stage.scrollIntoView && setTimeout(function () { var r = arena.getBoundingClientRect(); if (r.bottom > innerHeight || r.top < 0) window.scrollBy({ top: r.top - 90, behavior: calm ? 'auto' : 'smooth' }); }, calm ? 0 : 560);
+        resize(); if (!g) newRun(); if (state === 'ready') overlayReady(); hud(); loop();
       }
     }
-    cta.addEventListener('click', function () { setOpen(!open); });
+    if (cta) cta.addEventListener('click', function () { setOpen(!open); });
     document.addEventListener('visibilitychange', function () { if (document.hidden) { last = 0; } else { resumeGrace = 0.8; loop(); } });
     if ('IntersectionObserver' in window) new IntersectionObserver(function (es) { var was = visible; visible = es[0].isIntersecting; if (visible && !was) { resumeGrace = state === 'playing' ? 0.8 : 0; loop(); } }, { threshold: 0.15 }).observe(arena); else visible = true;
     var rz; window.addEventListener('resize', function () { clearTimeout(rz); rz = setTimeout(function () { if (open) resize(); }, 100); });
     document.addEventListener('click', function (e) { if (e.target.closest && e.target.closest('[data-theme-toggle]')) setTimeout(colours, 50); });
     window.addEventListener('pagehide', function () { cancelAnimationFrame(raf); });
 
-    hud(); stage.inert = true;
+    hud(); setOpen(true); window.addEventListener('load', function () { resize(); });
     return { destroy: function () { cancelAnimationFrame(raf); } };
   }
 
