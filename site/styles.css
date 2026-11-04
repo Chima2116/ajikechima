@@ -321,8 +321,6 @@ a.work:focus-visible .work__arrow { opacity: 1; transform: none; }
 .row__sub { color: var(--muted); font-size: 0.875rem; }
 
 .contact__title { font-weight: 500; font-size: clamp(1.5rem, 2.8vw, 2.125rem); line-height: 1.1; letter-spacing: -0.025em; text-wrap: balance; max-width: 18ch; }
-.contact__email { display: inline-block; margin-top: 1.25rem; font-weight: 500; font-size: clamp(1.05rem, 2vw, 1.375rem); }
-.contact__links { margin-top: 0.9rem; display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; font-size: 0.875rem; }
 
 .foot { padding-block: 2rem; border-top: 1px dashed var(--guide); color: var(--muted); font-family: var(--font-mono); font-size: 0.6875rem; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem 2rem; }
 
@@ -659,7 +657,6 @@ html.theme-vt::view-transition-new(root) {
 .soc:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .soc--lg { width: 2.5rem; height: 2.5rem; border: 1px solid var(--guide); border-radius: 999px; color: var(--ink); }
 .soc--lg svg { width: 1.125rem; height: 1.125rem; }
-.contact__links { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 0.6rem; }
 
 /* Case-study media */
 .cs-media { margin: 1.75rem 0 0; }
@@ -1026,13 +1023,6 @@ html.js-anim .cl-item { animation: cl-in 0.95s cubic-bezier(0.2, 0.8, 0.2, 1) bo
 .nf__links .pill { text-decoration: none; display: inline-block; }
 
 /* copy the email */
-.contact__row { display: inline-flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; margin-top: 1.5rem; }
-.contact__row .contact__email { margin-top: 0; }
-.copy { font: inherit; font-size: 0.75rem; font-family: var(--font-mono); padding: 0.4rem 0.8rem; border: 1px solid var(--guide); border-radius: 999px; background: none; color: var(--muted); cursor: pointer; transition: color 0.2s, border-color 0.2s, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
-.copy:hover { color: var(--ink); border-color: var(--muted); transform: translateY(-1px); }
-.copy:active { transform: scale(0.95); }
-.copy:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.copy.is-done { color: var(--accent); border-color: var(--accent); }
 
 /* small hover touches */
 .rail__nav a { transition: color 0.2s, transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); }
@@ -1051,8 +1041,7 @@ html.js-anim .cl-item { animation: cl-in 0.95s cubic-bezier(0.2, 0.8, 0.2, 1) bo
   .corner .icon-btn { width: 2.5rem; height: 2.5rem; }
   .rail__links a { padding-block: 0.7rem; }
   .arc__link, .tl__link { padding-block: 0.6rem; }
-  .pill, .copy { min-height: 2.75rem; display: inline-flex; align-items: center; }
-  .arc__row { padding-block: 1.3rem; }
+  .pill,   .arc__row { padding-block: 1.3rem; }
 }
 
 /* Ask assistant (React + Halaska UI bundle in assistant/) */
@@ -1262,8 +1251,7 @@ html.js-anim .cl-item { animation: cl-in 0.95s cubic-bezier(0.2, 0.8, 0.2, 1) bo
 .contact__hello:hover, .contact__hello:focus-visible { color: var(--ink); }
 .contact__hello:hover svg, .contact__hello:focus-visible svg { transform: translate(6px, -6px); color: var(--accent); opacity: 1; }
 .contact__hello:focus-visible { outline: 2px solid var(--accent); outline-offset: 6px; }
-#contact .contact__row { margin-top: clamp(1.5rem, 4vw, 2.5rem); }
-.block--rf { padding-block: clamp(2rem, 5vw, 3.5rem); }
+#contact .block--rf { padding-block: clamp(2rem, 5vw, 3.5rem); }
 .block--rf, #contact { padding-top: clamp(2.75rem, 6vw, 4.25rem); }
 @media (hover: none) { .contact__hello { color: var(--ink); } .contact__hello svg { opacity: 1; color: var(--accent); } }
 
@@ -1316,3 +1304,45 @@ html.js-anim .cl-item { animation: cl-in 0.95s cubic-bezier(0.2, 0.8, 0.2, 1) bo
 .rf__bact .rf__btn { margin: 0; height: 2.4rem; font-size: 0.875rem; }
 @media (prefers-reduced-motion: reduce) { .rf__board, .rf__row, .rf__row--sk span { animation: none; } }
 @media (max-width: 640px) { .rf__board { padding: 1rem 0.85rem; } .rf__row { grid-template-columns: 1.6rem minmax(0, 1fr) 2.6rem 3rem; gap: 0.5rem; padding-inline: 0.4rem; } .rf__field { flex-direction: column; } .rf__field .rf__btn { width: 100%; } }
+
+/* contact: one tidy panel, an email row on top and four equal links below */
+.contact__panel { margin-top: clamp(1.5rem, 4vw, 2.5rem); border: 1px solid var(--guide); border-radius: 18px; overflow: hidden; background: color-mix(in srgb, var(--panel) 45%, transparent); }
+.contact__mail { display: flex; align-items: center; gap: 1rem 1.5rem; padding: 1.15rem 1.25rem 1.15rem 1.5rem; }
+.contact__label { flex: none; width: 3rem; font: 0.625rem/1 var(--font-mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.contact__email { flex: 1; min-width: 0; overflow-wrap: anywhere; font-weight: 500; font-size: clamp(1.2rem, 2.6vw, 1.75rem); line-height: 1.15; letter-spacing: -0.03em; color: var(--ink); text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--accent) 55%, transparent); text-decoration-thickness: 1.5px; text-underline-offset: 0.2em; transition: color 0.25s, text-decoration-color 0.25s; }
+.contact__email:hover { color: var(--accent); text-decoration-color: var(--accent); }
+.copy { position: relative; flex: none; display: grid; place-items: center; width: 2.75rem; height: 2.75rem; padding: 0; border: 1px solid var(--guide); border-radius: 50%; background: var(--bg); color: var(--muted); cursor: pointer; transition: color 0.2s, border-color 0.2s, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.copy:hover { color: var(--ink); border-color: var(--muted); }
+.copy:active { transform: scale(0.92); }
+.copy:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.copy__i, .cp__i { grid-area: 1 / 1; width: 1.15rem; height: 1.15rem; transition: opacity 0.2s, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.cp__i--check { opacity: 0; transform: scale(0.5); }
+.copy.is-done { color: var(--accent); border-color: var(--accent); }
+.copy.is-done .cp__i--copy { opacity: 0; transform: scale(0.5); }
+.copy.is-done .cp__i--check { opacity: 1; transform: none; }
+.copy__tip { position: absolute; right: calc(100% + 0.6rem); top: 50%; padding: 0.35rem 0.6rem; border-radius: 8px; background: var(--ink); color: var(--bg); font: 0.625rem/1 var(--font-mono); letter-spacing: 0.04em; white-space: nowrap; opacity: 0; transform: translate(6px, -50%); pointer-events: none; transition: opacity 0.2s, transform 0.25s; }
+.copy.is-done .copy__tip { opacity: 1; transform: translate(0, -50%); }
+.contact__list { display: grid; grid-template-columns: repeat(4, 1fr); margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--guide); }
+.contact__list li + li { border-left: 1px solid var(--guide); }
+.contact__item { position: relative; display: flex; align-items: center; gap: 0.85rem; padding: 1.1rem 1.25rem; color: var(--ink); text-decoration: none; transition: background-color 0.25s; }
+.contact__item:hover, .contact__item:focus-visible { background: color-mix(in srgb, var(--accent) 6%, transparent); }
+.contact__item:focus-visible { outline: 2px solid var(--accent); outline-offset: -3px; }
+.contact__item .ci { flex: none; width: 1.35rem; height: 1.35rem; fill: currentColor; }
+.contact__item .ci--line { fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.contact__t { display: grid; gap: 0.3rem; min-width: 0; }
+.contact__t b { font-weight: 500; font-size: 0.9375rem; line-height: 1; }
+.contact__t small { font: 0.625rem/1 var(--font-mono); letter-spacing: 0.04em; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.contact__item .ca { margin-left: auto; flex: none; width: 0.95rem; height: 0.95rem; color: var(--muted); opacity: 0.55; transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.2s, opacity 0.2s; }
+.contact__item:hover .ca { transform: translate(3px, -3px); color: var(--accent); opacity: 1; }
+@media (max-width: 860px) {
+  .contact__list { grid-template-columns: 1fr 1fr; }
+  .contact__list li:nth-child(odd) { border-left: 0; }
+  .contact__list li:nth-child(n + 3) { border-top: 1px solid var(--guide); }
+}
+@media (max-width: 520px) {
+  .contact__mail { flex-wrap: wrap; padding: 1.1rem 1rem 1.1rem 1.15rem; row-gap: 0.55rem; }
+  .contact__label { width: 100%; }
+  .contact__email { flex: 1 1 0; }
+  .contact__item { padding: 1rem 1rem; gap: 0.7rem; }
+}
+@media (prefers-reduced-motion: reduce) { .copy__tip, .cp__i { transition: none; } }
