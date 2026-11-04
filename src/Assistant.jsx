@@ -127,7 +127,7 @@ export default function Assistant() {
         {typing && <ThinkingIndicator label="Looking through the portfolio" />}
       </div>
 
-      <div style={{ flex: "none", padding: `0 ${pad}px ${pad - 4}px`, display: "flex", flexDirection: "column", gap: 12 }}>
+      <div style={{ flex: "none", padding: `0 ${pad}px calc(${pad}px + env(safe-area-inset-bottom, 0px))`, display: "flex", flexDirection: "column", gap: 12 }}>
         {!empty && <div style={{ display: "flex", gap: 8, flexWrap: "nowrap", overflow: "hidden", alignItems: "center" }}>
           {chips.map((i) => <Chip key={i.q} onToggle={() => send(i.q)}>{i.label}</Chip>)}
           {pool.length > PAGE && <Chip onToggle={() => setPage((p) => p + 1)}>More</Chip>}

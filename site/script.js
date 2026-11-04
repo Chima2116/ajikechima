@@ -960,7 +960,9 @@
 
   var EASE_OPEN = 'cubic-bezier(0.22, 1, 0.36, 1)', EASE_CLOSE = 'cubic-bezier(0.6, 0, 0.2, 1)';
   var main = document.getElementById('main');
-  var busy = false, isOpen = false, pill = panel.querySelector('[data-ask-pill]');
+  var busy = false, isOpen = false, isSheet = false, pill = panel.querySelector('[data-ask-pill]');
+  var scrim = document.createElement('div'); scrim.className = 'ask-scrim'; scrim.hidden = true; document.body.appendChild(scrim);
+  function veil(on) { if (!isSheet && on) return; if (on) { scrim.hidden = false; requestAnimationFrame(function () { scrim.classList.add('is-on'); }); } else { scrim.classList.remove('is-on'); setTimeout(function () { scrim.hidden = true; }, 420); } }
   // Centre the button and the panel on the main column, not the whole window.
   function place() {
     var r = main ? main.getBoundingClientRect() : { left: 0, width: innerWidth };
@@ -969,13 +971,17 @@
     var cx = left + width / 2;
     var rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
     var w = Math.min(42 * rem, width - 2 * rem), h = Math.min(32 * rem, innerHeight - 2.5 * rem);
+    var sheet = vw < 640;                       // phones: a bottom sheet that fills the width
+    if (sheet) { w = vw; h = Math.round(innerHeight * 0.9); cx = vw / 2; }
     var st = document.documentElement.style;
-    st.setProperty('--ask-cx', cx + 'px'); st.setProperty('--ask-left', (cx - w / 2) + 'px');
+    st.setProperty('--ask-cx', cx + 'px'); st.setProperty('--ask-left', (sheet ? 0 : cx - w / 2) + 'px');
     st.setProperty('--ask-w', w + 'px'); st.setProperty('--ask-h', h + 'px');
+    st.setProperty('--ask-r', sheet ? '24px 24px 0 0' : '24px');
+    isSheet = sheet;
   }
   place();
   window.addEventListener('resize', place);
-  var BOX = { width: 'var(--ask-w)', height: 'var(--ask-h)', left: 'var(--ask-left)', borderRadius: '24px' };
+  var BOX = { width: 'var(--ask-w)', height: 'var(--ask-h)', left: 'var(--ask-left)', borderRadius: 'var(--ask-r)' };
   function fabBox() {
     var f = fab.getBoundingClientRect();
     return { width: f.width + 'px', height: f.height + 'px', left: f.left + 'px', borderRadius: (f.height / 2) + 'px' };
@@ -985,7 +991,7 @@
   // The panel is one box that grows out of the pill, so its border and corners stay true all the way.
   function open() {
     if (busy || isOpen) return;
-    place(); load(); busy = true; isOpen = true;
+    place(); load(); busy = true; isOpen = true; veil(true);
     pill.innerHTML = fab.innerHTML;
     var from = fabBox();
     panel.hidden = false;
@@ -1002,7 +1008,7 @@
   }
   function close() {
     if (busy || !isOpen) return;
-    busy = true; isOpen = false;
+    busy = true; isOpen = false; veil(false);
     fab.setAttribute('aria-expanded', 'false');
     if (window.siteSound) window.siteSound('close');
     var done = function () { clean(); panel.hidden = true; busy = false; fab.focus({ preventScroll: true }); };
@@ -1017,6 +1023,7 @@
   }
   fab.addEventListener('click', function () { if (panel.hidden) open(); else close(); });
   closeBtn.addEventListener('click', close);
+  scrim.addEventListener('click', close);
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !panel.hidden) close(); });
 })();
 
