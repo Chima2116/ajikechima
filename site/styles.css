@@ -499,15 +499,16 @@ a.work:focus-visible .work__arrow { opacity: 1; transform: none; }
 .cl-squiggle { --x: 8%; --y: 80%; --w: 22%; }
 
 @media (max-width: 899px) {
-  .collage { aspect-ratio: 1 / 1.02; }
-  .cl-item--portrait { --x: 4%; --y: 3%; --w: 44%; }
-  .cl-item--flag { --x: 39%; --y: 1%; --w: 11%; }
-  .cl-item--anime { --x: 52%; --y: 6%; --w: 44%; }
-  .cl-item--ball { --x: 6%; --y: 56%; --w: 24%; }
-  .cl-item--crest { --x: 76%; --y: 52%; --w: 16%; }
-  .cl-item--pad { --x: 30%; --y: 66%; --w: 40%; }
+  .collage { aspect-ratio: 1 / 0.9; margin-top: 1.75rem; margin-bottom: 0.75rem; }
+  .cl-item--portrait { --x: 6%; --y: 3.5%; --w: 38%; }
+  .cl-item--flag { --x: 35%; --y: 1%; --w: 10%; }
+  .cl-item--anime { --x: 53%; --y: 5.5%; --w: 40%; }
+  .cl-item--ball { --x: 8%; --y: 71%; --w: 18%; }
+  .cl-item--crest { --x: 79%; --y: 49%; --w: 13%; }
+  .cl-item--pad { --x: 32%; --y: 72%; --w: 34%; }
   .cl-squiggle { display: none; }
-  .cl-tip { max-width: 10rem; }
+  .cl-tip { max-width: 9rem; }
+}
 }
 
 
@@ -549,7 +550,7 @@ a.work:focus-visible .work__arrow { opacity: 1; transform: none; }
 .sound > span:first-child { color: var(--muted); margin-right: 0.15rem; }
 .cl-item--laptop { --x: 63%; --y: 32%; --w: 11%; --r: -6deg; }
 @media (max-width: 899px) {
-  .cl-item--laptop { --x: 62%; --y: 33%; --w: 17%; }
+  .cl-item--laptop { --x: 59%; --y: 44%; --w: 14%; }
 }
 
 /* Icon controls */
