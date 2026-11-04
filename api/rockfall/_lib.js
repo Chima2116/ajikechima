@@ -70,6 +70,7 @@ async function sb(url, opt) {
   if (!r.ok) { const t = await r.text().catch(() => ''); const x = new Error('supabase'); x.status = r.status; x.detail = t; x.hint = classify(r.status, t); console.error('rockfall supabase', r.status, t.slice(0, 200)); throw x; }
   return r;
 }
+async function json(r) { try { return await r.json(); } catch (e) { const x = new Error('bad_response'); x.hint = 'bad_response'; console.error('rockfall: non-JSON reply from the database URL'); throw x; } }
 const base = () => process.env.SUPABASE_URL.replace(/\/$/, '') + '/rest/v1/rockfall_scores';
 // Works with either kind of server key: the older service_role JWT (starts "eyJ") or the newer secret key (starts "sb_secret_").
 const headers = (extra) => {
@@ -81,7 +82,7 @@ const headers = (extra) => {
 
 export async function insertScore(row) {
   const r = await sb(base(), { method: 'POST', headers: headers({ Prefer: 'return=representation' }), body: JSON.stringify(row) });
-  return (await r.json())[0];
+  return (await json(r))[0];
 }
 export async function countWhere(query) {
   const r = await sb(base() + '?select=id&' + query, { headers: headers({ Prefer: 'count=exact', Range: '0-0' }) });
@@ -91,7 +92,7 @@ export async function countWhere(query) {
 export async function topScores(limit, sinceIso) {
   const q = '?select=name,score,duration,created_at&order=score.desc,duration.desc,created_at.asc&limit=' + limit + (sinceIso ? '&created_at=gte.' + encodeURIComponent(sinceIso) : '');
   const r = await sb(base() + q, { headers: headers() });
-  return r.json();
+  return json(r);
 }
 export function rankQuery(score, duration, sinceIso) {
   // better than this run: a higher score, or the same score in less time... we rank by score only and break ties by earlier submission
