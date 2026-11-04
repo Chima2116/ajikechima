@@ -1129,57 +1129,52 @@
   }, { threshold: 0.2 }).observe(box);
 })();
 
-// Footer playground: throwable pieces and a game of noughts and crosses
+// Footer playground: sports to throw around, and rock-paper-scissors against Chima
 (function () {
   var arena = document.querySelector('[data-play-arena]');
-  var game = document.querySelector('[data-ttt]');
   var calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // ---------- the pieces ----------
-  var SVG = {
-    pen: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l6 9-6 9-6-9 6-9z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/></svg>',
-    cursor: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3l14 7-6 2-2 6z" fill="currentColor"/></svg>',
-    swatch: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="3"/></svg>',
-    face: '<svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="9" cy="11" rx="1.7" ry="2.6" fill="currentColor"/><ellipse cx="15" cy="11" rx="1.7" ry="2.6" fill="currentColor"/></svg>'
+  // ---------- the stickers: what I play ----------
+  var SPORT = {
+    football: '<svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="46" fill="#fafafa" stroke="#151515" stroke-width="3.5"/><polygon points="50,33 65,44 59,62 41,62 35,44" fill="#151515"/><path d="M50 33V8M65 44l25-8M59 62l15 21M41 62L26 83M35 44L10 36" stroke="#151515" stroke-width="3.5" stroke-linecap="round" fill="none"/><path d="M26 83l-8-11 6-9M74 83l8-11-6-9M10 36l-2 14 8 4M90 36l2 14-8 4M50 8l-12 5 3 9M50 8l12 5-3 9" fill="#151515" opacity=".9"/></svg>',
+    basketball: '<svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="46" fill="#e8742e" stroke="#151515" stroke-width="3.5"/><path d="M50 4v92M4 50h92" stroke="#151515" stroke-width="3.5" fill="none"/><path d="M17 17c20 18 20 48 0 66M83 17c-20 18-20 48 0 66" stroke="#151515" stroke-width="3.5" fill="none"/></svg>',
+    tennis: '<svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="46" fill="#d3e64a" stroke="#151515" stroke-width="3.5"/><path d="M12 22c26 8 26 48 0 56M88 22c-26 8-26 48 0 56" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round"/></svg>',
+    paddle: '<svg viewBox="0 0 100 100" aria-hidden="true"><rect x="45" y="58" width="12" height="36" rx="5" transform="rotate(-28 51 76)" fill="#c88a4c" stroke="#151515" stroke-width="3.5"/><circle cx="42" cy="40" r="32" fill="#d8352c" stroke="#151515" stroke-width="3.5"/><circle cx="82" cy="20" r="9" fill="#fafafa" stroke="#151515" stroke-width="3"/></svg>',
+    goggles: '<svg viewBox="0 0 100 100" aria-hidden="true"><path d="M4 46c10-10 20-10 30-6M96 46c-10-10-20-10-30-6" stroke="#151515" stroke-width="5" fill="none" stroke-linecap="round"/><circle cx="31" cy="52" r="20" fill="#3d86e8" stroke="#151515" stroke-width="4"/><circle cx="69" cy="52" r="20" fill="#3d86e8" stroke="#151515" stroke-width="4"/><path d="M50 50h0M47 48c2-2 4-2 6 0" stroke="#151515" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M22 44c3-4 8-5 12-3" stroke="#fff" stroke-width="3.5" fill="none" stroke-linecap="round" opacity=".8"/></svg>'
   };
   var PIECES = [
-    { t: 'N', n: 'Nuton', href: 'work/nuton.html', bg: '#0f6b4f' },
-    { t: 'K', n: 'Kova', href: 'work/kova.html', bg: '#a3235f', shape: 'squircle' },
-    { t: 'F', n: 'Freshile', href: 'work/freshile.html', bg: '#2faa6d', shape: 'diamond' },
-    { t: 'T', n: 'TLS Nigeria', href: 'work/tls.html', bg: '#14365d', shape: 'sq' },
-    { t: 'M', n: 'Mobihealth', href: 'work/mobihealth.html', bg: '#2f7cf0' },
-    { t: 'S', n: 'Syncorix', href: 'work/syncorix.html', bg: '#14a58a', shape: 'squircle' },
-    { t: 'B', n: 'Summit Bank', bg: '#b3202a', shape: 'sq' },
-    { t: 'Aa', n: 'Type', bg: '#f4f1ea', fg: '#151515', shape: 'squircle' },
-    { svg: 'pen', n: 'Pen tool', bg: '#151515', shape: 'diamond' },
-    { svg: 'cursor', n: 'Cursor', bg: '#ffffff', fg: '#151515' },
-    { svg: 'swatch', n: 'Swatch', bg: 'conic-gradient(#e8553d, #f5b83d, #3fb67a, #3d7fe8, #a23de8, #e8553d)', fg: '#fff' },
-    { svg: 'face', n: 'Hello', bg: '#0f6b4f', shape: 'squircle' }
+    { n: 'Volleyball', img: 'assets/personal/volleyball.png', w: 4.2 },
+    { n: 'Football', svg: 'football', w: 3.9 },
+    { n: 'Basketball', svg: 'basketball', w: 4 },
+    { n: 'Lawn tennis', svg: 'tennis', w: 3.1 },
+    { n: 'Table tennis', svg: 'paddle', w: 4, k: 0.42 },
+    { n: 'Swimming', svg: 'goggles', w: 4, k: 0.46 },
+    { n: 'FIFA night', img: 'assets/personal/controller.png', w: 5.6, h: 0.64, k: 0.36 },
+    { n: 'Barca, always', img: 'assets/personal/barca-crest.png', w: 3.5, h: 1.04, k: 0.46 }
   ];
 
   if (arena) {
     var items = [], W = 0, H = 0, running = false, last = 0, visible = false, started = false;
     PIECES.forEach(function (p, i) {
-      var el = document.createElement(p.href ? 'a' : 'span');
-      el.className = 'play__tile' + (p.shape ? ' play__tile--' + p.shape : '');
-      if (p.href) { el.href = p.href; el.setAttribute('aria-label', p.n + ' (open project)'); } else { el.setAttribute('role', 'img'); el.setAttribute('aria-label', p.n); }
-      el.style.setProperty('--bg-t', p.bg); if (p.fg) el.style.setProperty('--fg-t', p.fg);
-      el.innerHTML = (p.svg ? SVG[p.svg] : p.t) + '<small>' + p.n + '</small>';
-      el.draggable = false;
+      var el = document.createElement('span');
+      el.className = 'play__tile'; el.setAttribute('role', 'img'); el.setAttribute('aria-label', p.n);
+      el.style.width = p.w + 'rem'; el.style.height = (p.w * (p.h || 1)) + 'rem';
+      el.innerHTML = (p.img ? '<img src="' + p.img + '" alt="" draggable="false">' : SPORT[p.svg]) + '<small>' + p.n + '</small>';
       arena.appendChild(el);
-      items.push({ el: el, x: 0, y: -200, vx: 0, vy: 0, r: 30, rot: 0, held: false, i: i });
+      items.push({ el: el, x: 0, y: -200, vx: 0, vy: 0, r: 30, hw: 30, hh: 30, k: p.k || 0.5, rot: 0, held: false });
     });
+    function sizes() { items.forEach(function (it) { it.hw = it.el.offsetWidth / 2; it.hh = it.el.offsetHeight / 2; it.r = Math.max(it.hw, it.hh) * (it.k * 2 > 1 ? 1 : it.k * 2 > 0 ? it.k * 2 : 1) ; }); }
     function measure() {
-      W = arena.clientWidth; H = arena.clientHeight;
-      items.forEach(function (it) { it.r = it.el.offsetWidth / 2; it.x = Math.min(Math.max(it.x, it.r), W - it.r); it.y = Math.min(it.y, H - it.r); });
+      W = arena.clientWidth; H = arena.clientHeight; sizes();
+      items.forEach(function (it) { it.x = Math.min(Math.max(it.x, it.r), W - it.r); it.y = Math.min(it.y, H - it.r); });
     }
-    function paint(it) { it.el.style.transform = 'translate3d(' + (it.x - it.r).toFixed(1) + 'px,' + (it.y - it.r).toFixed(1) + 'px,0) rotate(' + it.rot.toFixed(3) + 'rad)'; }
+    function paint(it) { it.el.style.transform = 'translate3d(' + (it.x - it.hw).toFixed(1) + 'px,' + (it.y - it.hh).toFixed(1) + 'px,0) rotate(' + it.rot.toFixed(3) + 'rad)'; }
     function drop() {
       measure(); started = true;
-      items.forEach(function (it, k) {
+      items.forEach(function (it, n) {
         it.x = it.r + 8 + Math.random() * Math.max(10, W - 2 * it.r - 16);
-        if (calm) { it.x = it.r + 12 + (k / (items.length - 1)) * (W - 2 * it.r - 24); it.y = H - it.r - (k % 2) * 4; }
-        else { it.y = -it.r - k * 46; it.vx = (Math.random() - 0.5) * 140; it.vy = 0; }
+        if (calm) { it.x = it.r + 12 + (n / (items.length - 1)) * (W - 2 * it.r - 24); it.y = H - it.r; }
+        else { it.y = -it.r - n * 60; it.vx = (Math.random() - 0.5) * 140; it.vy = 0; }
         paint(it);
       });
       if (!calm) wake();
@@ -1187,16 +1182,16 @@
     function wake() { if (!running) { running = true; last = performance.now(); requestAnimationFrame(step); } }
     function step(now) {
       var dt = Math.min(0.033, (now - last) / 1000); last = now;
-      var G = 2200, E = 0.42, moving = false, k, j, a, b;
-      for (k = 0; k < items.length; k++) {
-        a = items[k]; if (a.held) { moving = true; continue; }
+      var G = 2200, E = 0.5, moving = false, n, m, a, b;
+      for (n = 0; n < items.length; n++) {
+        a = items[n]; if (a.held) { moving = true; continue; }
         a.vy += G * dt; a.x += a.vx * dt; a.y += a.vy * dt;
         if (a.x < a.r) { a.x = a.r; a.vx = -a.vx * E; } else if (a.x > W - a.r) { a.x = W - a.r; a.vx = -a.vx * E; }
-        if (a.y > H - a.r) { a.y = H - a.r; a.vy = -a.vy * E; if (Math.abs(a.vy) < 60) a.vy = 0; a.vx *= Math.max(0, 1 - 4.5 * dt); }
+        if (a.y > H - a.r) { a.y = H - a.r; a.vy = -a.vy * E; if (Math.abs(a.vy) < 60) a.vy = 0; a.vx *= Math.max(0, 1 - 3.2 * dt); }
         if (a.y < a.r) { a.y = a.r; a.vy = Math.abs(a.vy) * E; }
       }
-      for (var pass = 0; pass < 4; pass++) for (k = 0; k < items.length; k++) for (j = k + 1; j < items.length; j++) {
-        a = items[k]; b = items[j];
+      for (var pass = 0; pass < 4; pass++) for (n = 0; n < items.length; n++) for (m = n + 1; m < items.length; m++) {
+        a = items[n]; b = items[m];
         var dx = b.x - a.x, dy = b.y - a.y, d = Math.sqrt(dx * dx + dy * dy), min = a.r + b.r;
         if (d > 0 && d < min) {
           var nx = dx / d, ny = dy / d, over = min - d;
@@ -1208,22 +1203,20 @@
           if (rv < 0) { var jn = -(1 + E) * rv / wt; if (!a.held) { a.vx -= jn * nx * wa; a.vy -= jn * ny * wa; } if (!b.held) { b.vx += jn * nx * wb; b.vy += jn * ny * wb; } }
         }
       }
-      for (k = 0; k < items.length; k++) {
-        a = items[k];
+      for (n = 0; n < items.length; n++) {
+        a = items[n];
         a.x = Math.min(Math.max(a.x, a.r), W - a.r); a.y = Math.min(a.y, H - a.r);
         if (!a.held) { a.rot += (a.vx / a.r) * dt * 0.9; if (Math.abs(a.vx) > 6 || Math.abs(a.vy) > 12 || a.y < H - a.r - 1) moving = true; }
         paint(a);
       }
       if (moving && visible) requestAnimationFrame(step); else running = false;
     }
-    // dragging and throwing
     items.forEach(function (it) {
-      var sx, sy, st, moved, px, py, pt, ox, oy;
+      var pt, ox, oy;
       it.el.addEventListener('pointerdown', function (e) {
         if (e.button) return;
         var r = arena.getBoundingClientRect();
-        it.held = true; moved = false; sx = e.clientX; sy = e.clientY; st = performance.now();
-        px = e.clientX; py = e.clientY; pt = st;
+        it.held = true; pt = performance.now();
         ox = e.clientX - r.left - it.x; oy = e.clientY - r.top - it.y;
         it.vx = it.vy = 0; it.el.classList.add('is-held'); it.el.setPointerCapture(e.pointerId);
         it.el.parentNode.appendChild(it.el); wake();
@@ -1231,15 +1224,11 @@
       it.el.addEventListener('pointermove', function (e) {
         if (!it.held) return;
         var r = arena.getBoundingClientRect(), now = performance.now(), dt = Math.max(1, now - pt) / 1000;
-        var nx = e.clientX - r.left - ox, ny = e.clientY - r.top - oy;
-        nx = Math.min(Math.max(nx, it.r), W - it.r); ny = Math.min(Math.max(ny, it.r), H - it.r);
+        var nx = Math.min(Math.max(e.clientX - r.left - ox, it.r), W - it.r), ny = Math.min(Math.max(e.clientY - r.top - oy, it.r), H - it.r);
         it.vx = it.vx * 0.5 + ((nx - it.x) / dt) * 0.5; it.vy = it.vy * 0.5 + ((ny - it.y) / dt) * 0.5;
-        it.x = nx; it.y = ny; px = e.clientX; py = e.clientY; pt = now;
-        if (Math.abs(e.clientX - sx) + Math.abs(e.clientY - sy) > 5) moved = true;
-        paint(it);
-        if (calm) return;
+        it.x = nx; it.y = ny; pt = now; paint(it);
       });
-      function release(e) {
+      function release() {
         if (!it.held) return;
         it.held = false; it.el.classList.remove('is-held');
         if (performance.now() - pt > 90) { it.vx = 0; it.vy = 0; }
@@ -1248,8 +1237,6 @@
       }
       it.el.addEventListener('pointerup', release);
       it.el.addEventListener('pointercancel', release);
-      it.el.addEventListener('click', function (e) { if (moved) { e.preventDefault(); moved = false; } });
-      it.el.addEventListener('dragstart', function (e) { e.preventDefault(); });
     });
     if ('IntersectionObserver' in window) {
       new IntersectionObserver(function (es) {
@@ -1260,79 +1247,55 @@
     var rz; window.addEventListener('resize', function () { clearTimeout(rz); rz = setTimeout(function () { measure(); items.forEach(paint); wake(); }, 120); });
   }
 
-  // ---------- noughts and crosses ----------
-  if (!game) return;
-  var board = game.querySelector('.ttt'), line = game.querySelector('.ttt__line'), lineEl = line.querySelector('line');
-  var msg = game.querySelector('[data-ttt-msg]'), again = game.querySelector('[data-ttt-again]');
-  var youEl = game.querySelector('[data-ttt-you]'), meEl = game.querySelector('[data-ttt-me]');
-  var cells = [], state, over, score = { you: 0, me: 0 }, starter = 'X';
-  var WINS = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-  var X = '<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M8 8L32 32" pathLength="100"/><path d="M32 8L8 32" pathLength="100"/></svg>';
-  var O = '<svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="13" pathLength="100"/></svg>';
-  var SAYS = {
-    start: ['You are X. Your move.', 'Your move. I will try to be gentle.'],
-    reply: ['Nice X. My O.', 'Interesting. Very interesting.', 'Bold. I like it.', 'I have seen this one before.', 'Hmm. Okay.'],
-    lose: ['My O wins. Try again.', 'Three in a row. Care for another?', 'That one is mine. Rematch?'],
-    win: ['Okay, you got me. Hire me anyway?', 'Fair play. That was clean.', 'You win. I am only a footer.'],
-    draw: ['A draw. We are evenly matched.', 'Nobody wins. Everybody learns.']
-  };
-  function say(k) { var a = SAYS[k]; msg.textContent = a[Math.floor(Math.random() * a.length)]; }
-  for (var i = 0; i < 9; i++) (function (i) {
-    var b = document.createElement('button'); b.type = 'button'; b.className = 'ttt__cell'; b.setAttribute('aria-label', 'Square ' + (i + 1) + ', empty');
-    b.addEventListener('click', function () { if (!over && !state[i] && !thinking) play(i, 'X'); });
-    board.appendChild(b); cells.push(b);
-  })(i);
-  var thinking = false;
-  function winner(s) { for (var k = 0; k < WINS.length; k++) { var w = WINS[k]; if (s[w[0]] && s[w[0]] === s[w[1]] && s[w[0]] === s[w[2]]) return { p: s[w[0]], l: w }; } return null; }
-  function minimax(s, turn, me) {
-    var w = winner(s); if (w) return w.p === 'O' ? 10 : -10;
-    var free = []; for (var k = 0; k < 9; k++) if (!s[k]) free.push(k);
-    if (!free.length) return 0;
-    var best = turn === 'O' ? -99 : 99;
-    free.forEach(function (m) { s[m] = turn; var v = minimax(s, turn === 'O' ? 'X' : 'O'); s[m] = null; best = turn === 'O' ? Math.max(best, v) : Math.min(best, v); });
-    return best;
+  // ---------- rock, paper, scissors: Chima always wins ----------
+  var root = document.querySelector('[data-rps]');
+  if (!root) return;
+  var ICON = {};
+  root.querySelectorAll('[data-rps-pick]').forEach(function (b) { ICON[b.getAttribute('data-rps-pick')] = b.querySelector('svg').outerHTML; });
+  var beats = { rock: 'scissors', paper: 'rock', scissors: 'paper' };   // key beats value
+  var counter = { rock: 'paper', paper: 'scissors', scissors: 'rock' };  // what beats the key
+  var verbs = { rock: 'Rock blunts scissors.', paper: 'Paper covers rock.', scissors: 'Scissors cut paper.' };
+  var youEl = root.querySelector('[data-rps-you]'), meEl = root.querySelector('[data-rps-me]');
+  var handY = root.querySelector('[data-rps-yours]'), handM = root.querySelector('[data-rps-mine]');
+  var msg = root.querySelector('[data-rps-msg]'), again = root.querySelector('[data-rps-again]');
+  var picks = [].slice.call(root.querySelectorAll('[data-rps-pick]')), modes = [].slice.call(root.querySelectorAll('[data-rps-mode]'));
+  var need = 2, you, me, busy, over;
+  var WIN = ['Mine.', 'Called it.', 'Predictable. I practise.', 'I read minds. Design degree.', 'Point to Chima.', 'Too easy.'];
+  var TIE = ['Same move. Great minds.', 'A tie. I was being polite.', 'Again. I am just warming up.'];
+  var END = ['Chima wins, as always.', 'Another win for Chima. It is a habit.', 'Match to Chima. Rematch?'];
+  function pickOne(a) { return a[Math.floor(Math.random() * a.length)]; }
+  function setHand(el, move, cls) { el.className = 'rps__hand ' + (el === handM ? 'rps__hand--me' : 'rps__hand--you') + (cls ? ' ' + cls : ''); el.innerHTML = move ? ICON[move] : ''; }
+  function lock(on) { picks.forEach(function (b) { b.disabled = on; }); }
+  function newMatch() {
+    you = 0; me = 0; busy = false; over = false;
+    youEl.textContent = '0'; meEl.textContent = '0'; setHand(handY, null); setHand(handM, null); again.hidden = true; lock(false);
+    msg.textContent = 'Best of ' + (need * 2 - 1) + '. First to ' + need + ' wins. Pick your move.';
   }
-  function pick() {
-    var free = []; for (var k = 0; k < 9; k++) if (!state[k]) free.push(k);
-    if (Math.random() < 0.28) return free[Math.floor(Math.random() * free.length)];   // sometimes I slip, so you can win
-    var bestV = -99, moves = [];
-    free.forEach(function (m) { state[m] = 'O'; var v = minimax(state, 'X'); state[m] = null; if (v > bestV) { bestV = v; moves = [m]; } else if (v === bestV) moves.push(m); });
-    return moves[Math.floor(Math.random() * moves.length)];
-  }
-  function mark(i, p) {
-    state[i] = p; var c = cells[i]; c.innerHTML = p === 'X' ? X : O; c.classList.toggle('ttt__cell--o', p === 'O'); c.disabled = true;
-    c.setAttribute('aria-label', 'Square ' + (i + 1) + ', ' + p);
-  }
-  function finish(w) {
-    over = true;
-    cells.forEach(function (c) { c.disabled = true; });
-    if (w) {
-      var a = cells[w.l[0]], b = cells[w.l[2]], br = board.getBoundingClientRect(), s = 300 / br.width;
-      var ra = a.getBoundingClientRect(), rb = b.getBoundingClientRect();
-      lineEl.setAttribute('x1', ((ra.left + ra.width / 2 - br.left) * s).toFixed(1)); lineEl.setAttribute('y1', ((ra.top + ra.height / 2 - br.top) * s).toFixed(1));
-      lineEl.setAttribute('x2', ((rb.left + rb.width / 2 - br.left) * s).toFixed(1)); lineEl.setAttribute('y2', ((rb.top + rb.height / 2 - br.top) * s).toFixed(1));
-      line.classList.remove('is-on'); void line.getBoundingClientRect(); line.classList.add('is-on');
-      if (w.p === 'X') { score.you++; say('win'); } else { score.me++; say('lose'); }
-    } else say('draw');
-    youEl.textContent = score.you; meEl.textContent = score.me; again.hidden = false;
-    if (window.siteSound) window.siteSound(w && w.p === 'X' ? 'open' : 'close');
-  }
-  function play(i, p) {
-    mark(i, p);
-    var w = winner(state);
-    if (w || state.every(Boolean)) return finish(w);
-    if (p === 'X') {
-      thinking = true; say('reply');
-      setTimeout(function () { var m = pick(); mark(m, 'O'); thinking = false; var w2 = winner(state); if (w2 || state.every(Boolean)) finish(w2); }, calm ? 0 : 520);
-    }
-  }
-  function reset() {
-    state = new Array(9).fill(null); over = false; thinking = false; again.hidden = true;
-    cells.forEach(function (c, i) { c.innerHTML = ''; c.disabled = false; c.classList.remove('ttt__cell--o'); c.setAttribute('aria-label', 'Square ' + (i + 1) + ', empty'); });
-    line.classList.remove('is-on'); say('start');
-    starter = starter === 'X' ? 'O' : 'X';
-    if (starter === 'O') { thinking = true; msg.textContent = 'I will start this one.'; setTimeout(function () { mark(pick(), 'O'); thinking = false; }, calm ? 0 : 600); }
-  }
-  again.addEventListener('click', reset);
-  state = new Array(9).fill(null); over = false; msg.textContent = SAYS.start[0];
+  modes.forEach(function (b) {
+    b.addEventListener('click', function () {
+      need = +b.getAttribute('data-rps-mode') === 5 ? 3 : 2;
+      modes.forEach(function (x) { x.setAttribute('aria-checked', x === b ? 'true' : 'false'); });
+      newMatch();
+    });
+  });
+  picks.forEach(function (b) {
+    b.addEventListener('click', function () {
+      if (busy || over) return;
+      busy = true; lock(true);
+      var mine_ = Math.random() < 0.24 ? b.getAttribute('data-rps-pick') : counter[b.getAttribute('data-rps-pick')];   // a draw now and then keeps it believable. Chima never loses a round.
+      var yours = b.getAttribute('data-rps-pick');
+      setHand(handY, null, 'is-shake'); setHand(handM, null, 'is-shake'); msg.textContent = 'Rock. Paper. Scissors.';
+      setTimeout(function () {
+        setHand(handY, yours, 'is-reveal'); setHand(handM, mine_, 'is-reveal');
+        if (mine_ === yours) { msg.textContent = pickOne(TIE); busy = false; lock(false); return; }
+        me++; meEl.textContent = me; handM.classList.add('is-win');
+        if (me >= need) {
+          over = true; msg.textContent = verbs[mine_] + ' ' + pickOne(END); again.hidden = false;
+          if (window.siteSound) window.siteSound('close');
+        } else { msg.textContent = verbs[mine_] + ' ' + pickOne(WIN); busy = false; lock(false); }
+      }, calm ? 0 : 760);
+    });
+  });
+  again.addEventListener('click', newMatch);
+  newMatch();
 })();
