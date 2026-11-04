@@ -150,7 +150,7 @@ export const ENTRIES = [
   },
   {
     keys: ["code", "coding", "developer", "engineer", "handoff"],
-    text: "Studying software engineering is why Chimaobi talks to engineers in their own terms, writes proper handoffs, and builds working products with AI-assisted coding. They did not write Nuton's code.",
+    text: "Studying software engineering is why Chimaobi talks to engineers in their own terms, writes proper handoffs, and builds working products with AI-assisted coding. Chimaobi also builds with AI agents and vibe codes, mostly with Claude and sometimes Codex. They did not write Nuton's code.",
     sources: [S.about],
   },
   {
