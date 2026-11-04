@@ -55,7 +55,7 @@ export const ENTRIES = [
   },
   {
     keys: ["archive", "older project", "other project", "personal project", "concept"],
-    text: "The archive holds other case studies: client work (Mobihealth, Syncorix, Summit Bank), personal projects (FreelanceFlow, DiveHQ, Xplore) and a concept redesign of Snapchat's settings.",
+    text: "The archive holds other case studies: client work (Mobihealth, Syncorix, Summit Bank), personal projects (FreelanceFlow, DiveHQ, Xplore, Foodshop) and a concept redesign of Snapchat's settings.",
     sources: [S.arch],
   },
   {
@@ -67,6 +67,11 @@ export const ENTRIES = [
     keys: ["snapchat"],
     text: "A concept redesign from 2023 of Snapchat's settings page, started from interviews with four friends. It adds search, clearer grouping and two new ideas.",
     sources: [S.snap],
+  },
+  {
+    keys: ["foodshop", "food shop", "usefood", "framer", "food vendor", "whatsapp"],
+    text: "Foodshop is a personal project: a website for a tool that helps food vendors set up an online store and take orders and payments on WhatsApp, designed and built in Framer.",
+    sources: [S.arch],
   },
   {
     keys: ["divehq", "dive hq", "qr", "payments app"],
