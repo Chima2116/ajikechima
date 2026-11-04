@@ -5,11 +5,9 @@
  * To swap the artwork later, replace ART.player and ART.rock (they only draw).
  * To tune difficulty, edit CONFIG.levels.
  *
- * Global leaderboard (not built yet, on purpose): every run is seeded, so a
- * server can replay the same rocks. Send { seed, duration, inputs } to your
- * own endpoint (Supabase edge function, say), re-simulate it there, and
- * store the score the SERVER computes. Never store a score the client claims.
- * No sign-in is needed: use an anonymous id. Nothing here fakes a leaderboard.
+ * Leaderboard: scores go to /api/rockfall (see api/ and supabase/README.md). It stays hidden until that backend is
+ * configured, so the game works on its own. The server issues a signed run token and checks every score; the browser
+ * never decides a score by itself.
  */
 (function () {
   'use strict';
@@ -37,10 +35,21 @@
     storageKey: 'rockfall.best.v1'
   };
 
+  var API = '/api/rockfall';
+  function jfetch(url, opt) {
+    return fetch(url, opt).then(function (r) {
+      return r.json().catch(function () { return {}; }).then(function (d) {
+        if (!r.ok) { var e = new Error(d.error || 'http'); e.code = d.error || ('http' + r.status); e.status = r.status; throw e; }
+        return d;
+      });
+    });
+  }
   var Leaderboard = {
-    enabled: false,
-    submit: function (run) { return Promise.resolve(null); },   // see the note at the top
-    top: function () { return Promise.resolve(null); }
+    enabled: false, ready: null,
+    probe: function () { if (!this.ready) this.ready = jfetch(API + '/top?range=all').then(function () { Leaderboard.enabled = true; return true; }, function () { Leaderboard.enabled = false; return false; }); return this.ready; },
+    start: function () { return jfetch(API + '/start', { method: 'POST' }); },
+    submit: function (run) { return jfetch(API + '/score', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(run) }); },
+    top: function (range, score) { return jfetch(API + '/top?range=' + (range || 'all') + (score ? '&score=' + score : '')); }
   };
 
   // ---------- small helpers ----------
@@ -190,7 +199,7 @@
         if (lv.i !== g.lastLevel) { g.lastLevel = lv.i; hud(); }
         g.spawnIn -= dt;
         if (g.spawnIn <= 0) { var ok = spawn(lv); g.spawnIn = ok ? lv.gap * (0.8 + g.rand() * 0.45) : 0.12; }
-        g.inT += dt; if (g.inT >= 0.1) { g.inT = 0; if (g.inputs.length < 1500) g.inputs.push([Math.round(p.tx), Math.round(p.ty)]); }
+        g.inT += dt; if (g.inT >= 0.1) { g.inT = 0; if (g.inputs.length < 6000) g.inputs.push([Math.round(p.tx), Math.round(p.ty)]); }
       }
       // player eases toward the pointer
       if (state === 'playing' || state === 'ready' || state === 'over') {
@@ -235,7 +244,6 @@
       if (g.newRecord) { best = { score: score, time: t }; store(false, best); burst(W / 2, H * 0.4, 46, 280, [pal.accent, pal.ink, mix(pal.accent, pal.bg, 0.5)]); tone('win'); }
       hud(); overlayOver(t, score); root.setAttribute('data-rf-state', 'over');
       announce('Game over. You survived for ' + fmt(t) + ' and scored ' + score + (g.newRecord ? '. New personal best.' : '.'));
-      if (Leaderboard.enabled) Leaderboard.submit({ seed: g.seed, duration: t, inputs: g.inputs });
     }
 
     // ---------- drawing ----------
@@ -275,19 +283,102 @@
     }
     function announce(t) { if (live) live.textContent = t; }
     function toast(t) { var el = document.createElement('div'); el.className = 'rf__toast'; el.textContent = t; arena.appendChild(el); setTimeout(function () { el.remove(); }, 1400); }
+    // ---------- screens ----------
+    var tokenP = null, lastScore = null, name = '';
+    try { name = localStorage.getItem('rockfall.name') || ''; } catch (e) {}
+    function thin(a) { var step = Math.max(5, Math.ceil(a.length / 1200)); return a.filter(function (x, i) { return i % step === 0; }); }
+    function el(tag, cls, text) { var n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; }
+    function setBoardMode(on) { arena.classList.toggle('is-board', on); }
     function overlayReady() {
-      overlay.hidden = false; overlay.className = 'rf__overlay';
-      overlay.innerHTML = '<div class="rf__card"><p class="rf__kicker">Mini game</p><h3 class="rf__title">ROCKFALL</h3><p class="rf__tag">How long can you survive?</p><p class="rf__how">Move your cursor, or drag your finger, to dodge the rocks.</p><button type="button" class="rf__btn" data-rf-start>Start Game</button></div>';
+      setBoardMode(false); overlay.hidden = false; overlay.className = 'rf__overlay';
+      overlay.innerHTML = '<div class="rf__card"><p class="rf__kicker">Mini game</p><h3 class="rf__title">ROCKFALL</h3><p class="rf__tag">How long can you survive?</p><p class="rf__how">Move your cursor, or drag your finger, to dodge the rocks.</p><button type="button" class="rf__btn" data-rf-start>Start Game</button>' + (Leaderboard.enabled ? '<button type="button" class="rf__ghost" data-rf-board>Leaderboard</button>' : '') + '</div>';
       overlay.querySelector('[data-rf-start]').addEventListener('click', start);
+      var bb = overlay.querySelector('[data-rf-board]'); if (bb) bb.addEventListener('click', function () { showBoard({ range: 'all', back: overlayReady }); });
     }
     function overlayOver(t, score) {
-      overlay.hidden = false; overlay.className = 'rf__overlay is-over' + (g.newRecord ? ' is-record' : '');
-      overlay.innerHTML = '<div class="rf__card">' + (g.newRecord ? '<p class="rf__badge">New record</p>' : '') + '<h3 class="rf__title rf__title--sm">Well, that didn\'t go as planned.</h3><p class="rf__tag">You survived for <b>' + fmt(t) + '</b>.</p><dl class="rf__sum"><div><dt>Score</dt><dd>' + score + '</dd></div><div><dt>Best</dt><dd>' + best.score + '</dd></div></dl><p class="rf__how">Think you can do better?</p><button type="button" class="rf__btn" data-rf-start>Try Again</button></div>';
+      setBoardMode(false); overlay.hidden = false; overlay.className = 'rf__overlay is-over' + (g.newRecord ? ' is-record' : '');
+      var can = Leaderboard.enabled && tokenP && score >= 1, run = g;
+      overlay.innerHTML = '<div class="rf__card">' + (g.newRecord ? '<p class="rf__badge">New record</p>' : '') + '<h3 class="rf__title rf__title--sm">Well, that didn\'t go as planned.</h3><p class="rf__tag">You survived for <b>' + fmt(t) + '</b>.</p><dl class="rf__sum"><div><dt>Score</dt><dd>' + score + '</dd></div><div><dt>Best</dt><dd>' + best.score + '</dd></div></dl>' +
+        (can ? '<form class="rf__form" data-rf-form novalidate><label class="rf__label" for="rf-name">Put your score on the leaderboard</label><div class="rf__field"><input id="rf-name" name="name" type="text" maxlength="16" autocomplete="nickname" autocapitalize="words" spellcheck="false" placeholder="Your name" aria-describedby="rf-err"><button type="submit" class="rf__btn">Submit score</button></div><p class="rf__err" id="rf-err" data-rf-err role="alert" hidden></p></form><div class="rf__row2"><button type="button" class="rf__ghost" data-rf-start>Try Again</button><button type="button" class="rf__ghost" data-rf-skip>View leaderboard</button></div>'
+          : '<p class="rf__how">Think you can do better?</p><button type="button" class="rf__btn" data-rf-start>Try Again</button>') + '</div>';
       overlay.querySelector('[data-rf-start]').addEventListener('click', start);
+      if (!can) return;
+      var form = overlay.querySelector('[data-rf-form]'), input = form.elements.name, err = overlay.querySelector('[data-rf-err]'), btn = form.querySelector('button');
+      input.value = name;
+      var ERR = { name: 'Pick a name with letters or numbers.', already_submitted: 'That run is already on the board.', slow_down: 'Easy there. Try again in a minute.', time: 'That run did not check out.', stale: 'That run took too long to submit.', score: 'That score did not check out.', path: 'That run did not check out.' };
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var n = input.value.replace(/\s+/g, ' ').trim();
+        if (!n) { err.textContent = ERR.name; err.hidden = false; input.focus(); return; }
+        err.hidden = true; btn.disabled = true; btn.textContent = 'Submitting';
+        Promise.resolve(tokenP).then(function (tk) {
+          if (!tk || !tk.token) throw new Error('token');
+          return Leaderboard.submit({ token: tk.token, name: n, score: score, duration: Math.round(t * 10) / 10, inputs: thin(run.inputs) });
+        }).then(function (res) {
+          name = res.name || n; try { localStorage.setItem('rockfall.name', name); } catch (x) {}
+          showBoard({ range: 'all', mine: { name: name, score: score, rank: res.rank }, back: function () { overlayOver(t, score); } });
+        }).catch(function (x) {
+          btn.disabled = false; btn.textContent = 'Submit score';
+          err.textContent = ERR[x.code] || 'Could not submit right now. Try again.'; err.hidden = false;
+        });
+      });
+      overlay.querySelector('[data-rf-skip]').addEventListener('click', function () { showBoard({ range: 'all', hypo: score, back: function () { overlayOver(t, score); } }); });
+      if (!calm) setTimeout(function () { try { input.focus({ preventScroll: true }); } catch (x) {} }, 700);
+    }
+    function showBoard(o) {
+      setBoardMode(true); overlay.hidden = false; overlay.className = 'rf__overlay is-board';
+      var wrap = el('div', 'rf__board'), head = el('div', 'rf__bhead'), ttl = el('h3', 'rf__btitle', 'Leaderboard'), total = el('span', 'rf__total', '');
+      head.appendChild(ttl); head.appendChild(total);
+      var tabs = el('div', 'rf__tabs'); tabs.setAttribute('role', 'radiogroup'); tabs.setAttribute('aria-label', 'Time range');
+      var list = el('ol', 'rf__rows'), note = el('p', 'rf__note'), acts = el('div', 'rf__bact');
+      [['all', 'All time'], ['week', 'This week']].forEach(function (r) {
+        var b = el('button', '', r[1]); b.type = 'button'; b.setAttribute('role', 'radio'); b.setAttribute('aria-checked', r[0] === o.range ? 'true' : 'false');
+        b.addEventListener('click', function () { o.range = r[0]; [].forEach.call(tabs.children, function (x, i) { x.setAttribute('aria-checked', ['all', 'week'][i] === o.range ? 'true' : 'false'); }); load(); });
+        tabs.appendChild(b);
+      });
+      var again = el('button', 'rf__btn', 'Play again'); again.type = 'button'; again.addEventListener('click', start);
+      var back = el('button', 'rf__ghost', 'Back'); back.type = 'button'; back.addEventListener('click', function () { (o.back || overlayReady)(); });
+      acts.appendChild(back); acts.appendChild(again);
+      wrap.appendChild(head); wrap.appendChild(tabs); wrap.appendChild(list); wrap.appendChild(note); wrap.appendChild(acts);
+      overlay.innerHTML = ''; overlay.appendChild(wrap);
+      var token = 0;
+      function load() {
+        var my = ++token; list.className = 'rf__rows is-loading'; list.innerHTML = ''; note.textContent = '';
+        for (var k = 0; k < 6; k++) { var li = el('li', 'rf__row rf__row--sk'); li.innerHTML = '<span></span><span></span><span></span>'; list.appendChild(li); }
+        Leaderboard.top(o.range, o.hypo).then(function (d) {
+          if (my !== token) return;
+          list.className = 'rf__rows'; list.innerHTML = '';
+          total.textContent = d.total ? d.total + (d.total === 1 ? ' run' : ' runs') : '';
+          var rows = d.top || [], hit = -1;
+          if (o.mine) { var want = o.mine.rank && o.mine.rank <= 10 && o.range === 'all' ? o.mine.rank - 1 : -1; hit = want >= 0 ? want : rows.findIndex(function (r) { return r.name === o.mine.name && r.score === o.mine.score; }); }
+          if (!rows.length) { list.appendChild(el('li', 'rf__empty', o.range === 'week' ? 'Nothing this week yet. Be the first.' : 'No scores yet. Be the first.')); }
+          rows.forEach(function (r, i) { list.appendChild(rowEl(i + 1, r.name, r.duration, r.score, i === hit, i)); });
+          if (o.mine && hit < 0 && o.range === 'all' && o.mine.rank) {
+            list.appendChild(el('li', 'rf__gap', '···'));
+            list.appendChild(rowEl(o.mine.rank, o.mine.name, null, o.mine.score, true, rows.length + 1));
+          }
+          if (o.mine && o.mine.rank && o.range === 'all') note.textContent = o.mine.rank === 1 ? 'You are number one. For now.' : 'You are #' + o.mine.rank + (d.total ? ' of ' + d.total : '') + '. Think you can climb?';
+          else if (o.hypo && d.rank) note.textContent = 'Your score of ' + o.hypo + ' would sit at #' + d.rank + '.';
+        }).catch(function () {
+          if (my !== token) return;
+          list.className = 'rf__rows'; list.innerHTML = '';
+          var li = el('li', 'rf__empty', 'Could not load the leaderboard. '); var rb = el('button', 'rf__retry', 'Try again'); rb.type = 'button'; rb.addEventListener('click', load); li.appendChild(rb); list.appendChild(li);
+        });
+      }
+      function rowEl(rank, nm, dur, sc, me, i) {
+        var li = el('li', 'rf__row' + (me ? ' is-me' : '') + (rank <= 3 ? ' is-top' + rank : '')); li.style.setProperty('--i', i);
+        var rk = el('span', 'rf__rank', String(rank)), n = el('span', 'rf__name', nm);
+        if (me) { var you = el('em', 'rf__you', 'You'); n.appendChild(you); }
+        li.appendChild(rk); li.appendChild(n); li.appendChild(el('span', 'rf__time', dur ? fmt(dur) : '')); li.appendChild(el('b', 'rf__sc', String(sc)));
+        return li;
+      }
+      load();
+      var first = wrap.querySelector('button'); if (first && !calm) { try { first.focus({ preventScroll: true }); } catch (x) {} }
     }
     function start() {
-      newRun(); state = 'playing'; overlay.hidden = true; hud(); announce('Game started.');
+      newRun(); state = 'playing'; overlay.hidden = true; setBoardMode(false); hud(); announce('Game started.');
       arena.classList.add('is-playing'); canvas.style.touchAction = 'none'; root.setAttribute('data-rf-state', 'playing');
+      tokenP = Leaderboard.enabled ? Leaderboard.start().catch(function () { return null; }) : null;
       resumeGrace = 0.3; ensureAudio(); loop();
     }
 
@@ -331,6 +422,8 @@
     window.addEventListener('pagehide', function () { cancelAnimationFrame(raf); });
 
     hud(); setOpen(true); window.addEventListener('load', function () { resize(); });
+    Leaderboard.probe().then(function (ok) { if (ok && state === 'ready') overlayReady(); });
+    if ('ResizeObserver' in window) { var rzT; new ResizeObserver(function () { clearTimeout(rzT); rzT = setTimeout(function () { if (open && Math.abs(arena.clientHeight - H) > 2 || Math.abs(arena.clientWidth - W) > 2) resize(); }, 60); }).observe(arena); }
     return { destroy: function () { cancelAnimationFrame(raf); } };
   }
 

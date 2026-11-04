@@ -1266,3 +1266,53 @@ html.js-anim .cl-item { animation: cl-in 0.95s cubic-bezier(0.2, 0.8, 0.2, 1) bo
 .block--rf { padding-block: clamp(2rem, 5vw, 3.5rem); }
 .block--rf, #contact { padding-top: clamp(2.75rem, 6vw, 4.25rem); }
 @media (hover: none) { .contact__hello { color: var(--ink); } .contact__hello svg { opacity: 1; color: var(--accent); } }
+
+/* ---------- ROCKFALL: name entry and leaderboard ---------- */
+.rf__arena.is-board { height: auto; min-height: clamp(22rem, 52vh, 28rem); }
+.rf__ghost { height: 2.4rem; padding: 0 1.1rem; border: 1px solid var(--guide); border-radius: 999px; background: transparent; color: var(--ink); font: inherit; font-size: 0.8125rem; cursor: pointer; transition: border-color 0.2s, color 0.2s; }
+.rf__ghost:hover { border-color: var(--accent); color: var(--accent); }
+.rf__ghost:focus-visible, .rf__retry:focus-visible, .rf__tabs button:focus-visible, .rf__field input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.rf__row2 { display: flex; gap: 0.6rem; flex-wrap: wrap; justify-content: center; }
+.rf__form { display: grid; gap: 0.55rem; width: min(100%, 22rem); margin-top: 0.3rem; }
+.rf__label { font: 0.625rem/1 var(--font-mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.rf__field { display: flex; gap: 0.5rem; }
+.rf__field input { flex: 1; min-width: 0; height: 2.9rem; padding: 0 1.1rem; border: 1px solid var(--guide); border-radius: 999px; background: var(--bg); color: var(--ink); font: inherit; font-size: 1rem; }
+.rf__field input::placeholder { color: var(--muted); }
+.rf__field .rf__btn { margin: 0; flex: none; padding: 0 1.2rem; }
+.rf__field .rf__btn:disabled { opacity: 0.6; cursor: default; transform: none; }
+.rf__err { margin: 0; font-size: 0.8125rem; color: var(--accent); text-align: left; }
+.rf__err[hidden] { display: none; }
+.rf__overlay.is-board { position: relative; inset: auto; align-items: start; padding: 1rem; }
+.rf__board { display: grid; gap: 0.85rem; width: min(100%, 30rem); margin-inline: auto; padding: 1.15rem 1.15rem 1.05rem; border: 1px solid var(--guide); border-radius: 20px; background: color-mix(in srgb, var(--bg) 92%, transparent); box-shadow: 0 24px 60px -30px rgb(0 0 0 / 0.5); animation: rf-rise 0.5s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.rf__bhead { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
+.rf__btitle { margin: 0; font-weight: 600; font-size: 1.5rem; line-height: 1; letter-spacing: -0.04em; }
+.rf__total { font: 0.6875rem/1 var(--font-mono); letter-spacing: 0.06em; color: var(--muted); }
+.rf__tabs { display: grid; grid-template-columns: 1fr 1fr; padding: 0.2rem; border: 1px solid var(--guide); border-radius: 999px; }
+.rf__tabs button { height: 2rem; border: 0; border-radius: 999px; background: transparent; color: var(--muted); font: inherit; font-size: 0.8125rem; cursor: pointer; transition: background-color 0.25s, color 0.25s; }
+.rf__tabs button[aria-checked="true"] { background: var(--ink); color: var(--bg); }
+.rf__rows { list-style: none; margin: 0; padding: 0; min-height: 12rem; }
+.rf__row { display: grid; grid-template-columns: 1.9rem minmax(0, 1fr) 3rem 3.4rem; align-items: center; gap: 0.7rem; padding: 0.5rem 0.65rem; border-radius: 12px; animation: rf-row 0.45s cubic-bezier(0.22, 1, 0.36, 1) both; animation-delay: calc(var(--i, 0) * 40ms); }
+.rf__row + .rf__row { border-top: 1px solid var(--line); border-radius: 0; }
+@keyframes rf-row { from { opacity: 0; transform: translateY(6px); } }
+.rf__rank { display: grid; place-items: center; width: 1.6rem; height: 1.6rem; border-radius: 50%; font: 0.75rem/1 var(--font-mono); color: var(--muted); }
+.rf__row.is-top1 .rf__rank, .rf__row.is-top2 .rf__rank, .rf__row.is-top3 .rf__rank { color: var(--on-accent); background: var(--accent); }
+.rf__row.is-top2 .rf__rank { background: color-mix(in srgb, var(--accent) 68%, var(--bg)); }
+.rf__row.is-top3 .rf__rank { background: color-mix(in srgb, var(--accent) 42%, var(--bg)); color: var(--ink); }
+.rf__name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.9375rem; }
+.rf__you { margin-left: 0.5rem; padding: 0.15rem 0.45rem; border-radius: 999px; background: var(--accent); color: var(--on-accent); font: normal 0.5625rem/1 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; vertical-align: 0.1em; }
+.rf__time { font: 0.75rem/1 var(--font-mono); color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; }
+.rf__sc { font-weight: 500; font-size: 1.1rem; letter-spacing: -0.03em; text-align: right; font-variant-numeric: tabular-nums; }
+.rf__row.is-me { background: color-mix(in srgb, var(--accent) 10%, transparent); box-shadow: inset 3px 0 0 var(--accent); border-radius: 12px; border-top-color: transparent; }
+.rf__row.is-me .rf__name { font-weight: 600; }
+.rf__gap { padding: 0.1rem 0 0.1rem 2.3rem; color: var(--muted); letter-spacing: 0.3em; line-height: 1; }
+.rf__empty { padding: 2.6rem 1rem; text-align: center; color: var(--muted); font-size: 0.9375rem; }
+.rf__retry { border: 0; background: none; color: var(--accent); font: inherit; text-decoration: underline; cursor: pointer; }
+.rf__row--sk span { height: 0.9rem; border-radius: 6px; background: linear-gradient(90deg, var(--line), color-mix(in srgb, var(--guide) 60%, var(--line)), var(--line)); background-size: 200% 100%; animation: rf-sk 1.2s linear infinite; }
+.rf__row--sk span:nth-child(1) { width: 1.4rem; height: 1.4rem; border-radius: 50%; }
+.rf__row--sk span:nth-child(3) { grid-column: 3 / 5; }
+@keyframes rf-sk { to { background-position: -200% 0; } }
+.rf__note { margin: 0; min-height: 1.2em; font: 0.75rem/1.4 var(--font-mono); letter-spacing: 0.02em; color: var(--accent); text-align: center; }
+.rf__bact { display: flex; gap: 0.6rem; justify-content: center; }
+.rf__bact .rf__btn { margin: 0; height: 2.4rem; font-size: 0.875rem; }
+@media (prefers-reduced-motion: reduce) { .rf__board, .rf__row, .rf__row--sk span { animation: none; } }
+@media (max-width: 640px) { .rf__board { padding: 1rem 0.85rem; } .rf__row { grid-template-columns: 1.6rem minmax(0, 1fr) 2.6rem 3rem; gap: 0.5rem; padding-inline: 0.4rem; } .rf__field { flex-direction: column; } .rf__field .rf__btn { width: 100%; } }
