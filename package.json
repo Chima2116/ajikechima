@@ -1,0 +1,19 @@
+{
+  "name": "ajike-portfolio-ui",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "New interactive UI for the portfolio, built with Halaska UI. The portfolio site itself lives in site/ (plain HTML, CSS and JS).",
+  "scripts": {
+    "ui": "vite --open /ui.html",
+    "ui:build": "vite build && mv site/assistant/ui.html site/assistant/index.html"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "vite": "^5.4.11"
+  }
+}

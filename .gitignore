@@ -1,0 +1,15 @@
+node_modules/
+.DS_Store
+.claude/
+
+# private working notes and drafts (not part of the site)
+CASE-STUDY-EVIDENCE.md
+PHASE-01-RESEARCH.md
+CV-REVISED-DRAFT.md
+case-studies/
+content/
+design/
+exports/
+resume/
+site-archive/
+site-v1/
