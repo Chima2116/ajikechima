@@ -490,9 +490,25 @@
       </p>
     </section>
 
-    <footer class="foot">
-      <span>Chimaobi Ajike, Lagos, Nigeria</span>
-      <a class="link" href="#top">Back to top</a>
+    <footer class="foot foot--play" id="play">
+      <div class="play">
+        <div class="play__arena" data-play-arena aria-label="Playground: drag the pieces around">
+          <p class="play__hint">Give the pieces a nudge. Throw them, stack them, tap a project.</p>
+        </div>
+        <div class="play__game" data-ttt>
+          <p class="play__score" aria-live="off"><span>You <b data-ttt-you>0</b></span><i aria-hidden="true">·</i><span>Chima <b data-ttt-me>0</b></span></p>
+          <div class="ttt" role="group" aria-label="Tic-tac-toe against Chima. You are X.">
+            <svg class="ttt__line" viewBox="0 0 300 300" aria-hidden="true"><line x1="0" y1="0" x2="0" y2="0"/></svg>
+          </div>
+          <p class="play__msg" role="status" aria-live="polite" data-ttt-msg>You are X. Your move.</p>
+          <button type="button" class="play__again" data-ttt-again hidden>Play again</button>
+        </div>
+      </div>
+      <a class="foot__hello" href="mailto:ajike2116@gmail.com" data-sound="click"><span>Say hello.</span><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6 14 14 6M7.5 6H14v6.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      <div class="foot__bar">
+        <span>&copy; 2026 Chimaobi Ajike, Lagos, Nigeria</span>
+        <a class="link" href="#top">Back to top</a>
+      </div>
     </footer>
   </main>
 </div>

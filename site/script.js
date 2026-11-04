@@ -1128,3 +1128,211 @@
     if (es[0].isIntersecting) { box.classList.add('is-lit'); io.disconnect(); }
   }, { threshold: 0.2 }).observe(box);
 })();
+
+// Footer playground: throwable pieces and a game of noughts and crosses
+(function () {
+  var arena = document.querySelector('[data-play-arena]');
+  var game = document.querySelector('[data-ttt]');
+  var calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ---------- the pieces ----------
+  var SVG = {
+    pen: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l6 9-6 9-6-9 6-9z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/></svg>',
+    cursor: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3l14 7-6 2-2 6z" fill="currentColor"/></svg>',
+    swatch: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="3"/></svg>',
+    face: '<svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="9" cy="11" rx="1.7" ry="2.6" fill="currentColor"/><ellipse cx="15" cy="11" rx="1.7" ry="2.6" fill="currentColor"/></svg>'
+  };
+  var PIECES = [
+    { t: 'N', n: 'Nuton', href: 'work/nuton.html', bg: '#0f6b4f' },
+    { t: 'K', n: 'Kova', href: 'work/kova.html', bg: '#a3235f', shape: 'squircle' },
+    { t: 'F', n: 'Freshile', href: 'work/freshile.html', bg: '#2faa6d', shape: 'diamond' },
+    { t: 'T', n: 'TLS Nigeria', href: 'work/tls.html', bg: '#14365d', shape: 'sq' },
+    { t: 'M', n: 'Mobihealth', href: 'work/mobihealth.html', bg: '#2f7cf0' },
+    { t: 'S', n: 'Syncorix', href: 'work/syncorix.html', bg: '#14a58a', shape: 'squircle' },
+    { t: 'B', n: 'Summit Bank', bg: '#b3202a', shape: 'sq' },
+    { t: 'Aa', n: 'Type', bg: '#f4f1ea', fg: '#151515', shape: 'squircle' },
+    { svg: 'pen', n: 'Pen tool', bg: '#151515', shape: 'diamond' },
+    { svg: 'cursor', n: 'Cursor', bg: '#ffffff', fg: '#151515' },
+    { svg: 'swatch', n: 'Swatch', bg: 'conic-gradient(#e8553d, #f5b83d, #3fb67a, #3d7fe8, #a23de8, #e8553d)', fg: '#fff' },
+    { svg: 'face', n: 'Hello', bg: '#0f6b4f', shape: 'squircle' }
+  ];
+
+  if (arena) {
+    var items = [], W = 0, H = 0, running = false, last = 0, visible = false, started = false;
+    PIECES.forEach(function (p, i) {
+      var el = document.createElement(p.href ? 'a' : 'span');
+      el.className = 'play__tile' + (p.shape ? ' play__tile--' + p.shape : '');
+      if (p.href) { el.href = p.href; el.setAttribute('aria-label', p.n + ' (open project)'); } else { el.setAttribute('role', 'img'); el.setAttribute('aria-label', p.n); }
+      el.style.setProperty('--bg-t', p.bg); if (p.fg) el.style.setProperty('--fg-t', p.fg);
+      el.innerHTML = (p.svg ? SVG[p.svg] : p.t) + '<small>' + p.n + '</small>';
+      el.draggable = false;
+      arena.appendChild(el);
+      items.push({ el: el, x: 0, y: -200, vx: 0, vy: 0, r: 30, rot: 0, held: false, i: i });
+    });
+    function measure() {
+      W = arena.clientWidth; H = arena.clientHeight;
+      items.forEach(function (it) { it.r = it.el.offsetWidth / 2; it.x = Math.min(Math.max(it.x, it.r), W - it.r); it.y = Math.min(it.y, H - it.r); });
+    }
+    function paint(it) { it.el.style.transform = 'translate3d(' + (it.x - it.r).toFixed(1) + 'px,' + (it.y - it.r).toFixed(1) + 'px,0) rotate(' + it.rot.toFixed(3) + 'rad)'; }
+    function drop() {
+      measure(); started = true;
+      items.forEach(function (it, k) {
+        it.x = it.r + 8 + Math.random() * Math.max(10, W - 2 * it.r - 16);
+        if (calm) { it.x = it.r + 12 + (k / (items.length - 1)) * (W - 2 * it.r - 24); it.y = H - it.r - (k % 2) * 4; }
+        else { it.y = -it.r - k * 46; it.vx = (Math.random() - 0.5) * 140; it.vy = 0; }
+        paint(it);
+      });
+      if (!calm) wake();
+    }
+    function wake() { if (!running) { running = true; last = performance.now(); requestAnimationFrame(step); } }
+    function step(now) {
+      var dt = Math.min(0.033, (now - last) / 1000); last = now;
+      var G = 2200, E = 0.42, moving = false, k, j, a, b;
+      for (k = 0; k < items.length; k++) {
+        a = items[k]; if (a.held) { moving = true; continue; }
+        a.vy += G * dt; a.x += a.vx * dt; a.y += a.vy * dt;
+        if (a.x < a.r) { a.x = a.r; a.vx = -a.vx * E; } else if (a.x > W - a.r) { a.x = W - a.r; a.vx = -a.vx * E; }
+        if (a.y > H - a.r) { a.y = H - a.r; a.vy = -a.vy * E; if (Math.abs(a.vy) < 60) a.vy = 0; a.vx *= Math.max(0, 1 - 4.5 * dt); }
+        if (a.y < a.r) { a.y = a.r; a.vy = Math.abs(a.vy) * E; }
+      }
+      for (var pass = 0; pass < 4; pass++) for (k = 0; k < items.length; k++) for (j = k + 1; j < items.length; j++) {
+        a = items[k]; b = items[j];
+        var dx = b.x - a.x, dy = b.y - a.y, d = Math.sqrt(dx * dx + dy * dy), min = a.r + b.r;
+        if (d > 0 && d < min) {
+          var nx = dx / d, ny = dy / d, over = min - d;
+          var fa = a.y >= H - a.r - 0.5, fb = b.y >= H - b.r - 0.5;
+          var wa = a.held || (fa && !fb) ? 0 : 1, wb = b.held || (fb && !fa) ? 0 : 1, wt = wa + wb || 1;
+          if (fa && fb && !a.held && !b.held && Math.abs(ny) < 0.6 && over > 2) { var up = (a.x < b.x ? b : a); up.y -= over * 0.9; up.vy = -260; }
+          a.x -= nx * over * wa / wt; a.y -= ny * over * wa / wt; b.x += nx * over * wb / wt; b.y += ny * over * wb / wt;
+          var rv = (b.vx - a.vx) * nx + (b.vy - a.vy) * ny;
+          if (rv < 0) { var jn = -(1 + E) * rv / wt; if (!a.held) { a.vx -= jn * nx * wa; a.vy -= jn * ny * wa; } if (!b.held) { b.vx += jn * nx * wb; b.vy += jn * ny * wb; } }
+        }
+      }
+      for (k = 0; k < items.length; k++) {
+        a = items[k];
+        a.x = Math.min(Math.max(a.x, a.r), W - a.r); a.y = Math.min(a.y, H - a.r);
+        if (!a.held) { a.rot += (a.vx / a.r) * dt * 0.9; if (Math.abs(a.vx) > 6 || Math.abs(a.vy) > 12 || a.y < H - a.r - 1) moving = true; }
+        paint(a);
+      }
+      if (moving && visible) requestAnimationFrame(step); else running = false;
+    }
+    // dragging and throwing
+    items.forEach(function (it) {
+      var sx, sy, st, moved, px, py, pt, ox, oy;
+      it.el.addEventListener('pointerdown', function (e) {
+        if (e.button) return;
+        var r = arena.getBoundingClientRect();
+        it.held = true; moved = false; sx = e.clientX; sy = e.clientY; st = performance.now();
+        px = e.clientX; py = e.clientY; pt = st;
+        ox = e.clientX - r.left - it.x; oy = e.clientY - r.top - it.y;
+        it.vx = it.vy = 0; it.el.classList.add('is-held'); it.el.setPointerCapture(e.pointerId);
+        it.el.parentNode.appendChild(it.el); wake();
+      });
+      it.el.addEventListener('pointermove', function (e) {
+        if (!it.held) return;
+        var r = arena.getBoundingClientRect(), now = performance.now(), dt = Math.max(1, now - pt) / 1000;
+        var nx = e.clientX - r.left - ox, ny = e.clientY - r.top - oy;
+        nx = Math.min(Math.max(nx, it.r), W - it.r); ny = Math.min(Math.max(ny, it.r), H - it.r);
+        it.vx = it.vx * 0.5 + ((nx - it.x) / dt) * 0.5; it.vy = it.vy * 0.5 + ((ny - it.y) / dt) * 0.5;
+        it.x = nx; it.y = ny; px = e.clientX; py = e.clientY; pt = now;
+        if (Math.abs(e.clientX - sx) + Math.abs(e.clientY - sy) > 5) moved = true;
+        paint(it);
+        if (calm) return;
+      });
+      function release(e) {
+        if (!it.held) return;
+        it.held = false; it.el.classList.remove('is-held');
+        if (performance.now() - pt > 90) { it.vx = 0; it.vy = 0; }
+        it.vx = Math.max(-2600, Math.min(2600, it.vx)); it.vy = Math.max(-2600, Math.min(2600, it.vy));
+        if (calm) { it.vx = it.vy = 0; } else wake();
+      }
+      it.el.addEventListener('pointerup', release);
+      it.el.addEventListener('pointercancel', release);
+      it.el.addEventListener('click', function (e) { if (moved) { e.preventDefault(); moved = false; } });
+      it.el.addEventListener('dragstart', function (e) { e.preventDefault(); });
+    });
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (es) {
+        visible = es[0].isIntersecting;
+        if (visible && !started) drop(); else if (visible) wake();
+      }, { threshold: 0.25 }).observe(arena);
+    } else { visible = true; drop(); }
+    var rz; window.addEventListener('resize', function () { clearTimeout(rz); rz = setTimeout(function () { measure(); items.forEach(paint); wake(); }, 120); });
+  }
+
+  // ---------- noughts and crosses ----------
+  if (!game) return;
+  var board = game.querySelector('.ttt'), line = game.querySelector('.ttt__line'), lineEl = line.querySelector('line');
+  var msg = game.querySelector('[data-ttt-msg]'), again = game.querySelector('[data-ttt-again]');
+  var youEl = game.querySelector('[data-ttt-you]'), meEl = game.querySelector('[data-ttt-me]');
+  var cells = [], state, over, score = { you: 0, me: 0 }, starter = 'X';
+  var WINS = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+  var X = '<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M8 8L32 32" pathLength="100"/><path d="M32 8L8 32" pathLength="100"/></svg>';
+  var O = '<svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="13" pathLength="100"/></svg>';
+  var SAYS = {
+    start: ['You are X. Your move.', 'Your move. I will try to be gentle.'],
+    reply: ['Nice X. My O.', 'Interesting. Very interesting.', 'Bold. I like it.', 'I have seen this one before.', 'Hmm. Okay.'],
+    lose: ['My O wins. Try again.', 'Three in a row. Care for another?', 'That one is mine. Rematch?'],
+    win: ['Okay, you got me. Hire me anyway?', 'Fair play. That was clean.', 'You win. I am only a footer.'],
+    draw: ['A draw. We are evenly matched.', 'Nobody wins. Everybody learns.']
+  };
+  function say(k) { var a = SAYS[k]; msg.textContent = a[Math.floor(Math.random() * a.length)]; }
+  for (var i = 0; i < 9; i++) (function (i) {
+    var b = document.createElement('button'); b.type = 'button'; b.className = 'ttt__cell'; b.setAttribute('aria-label', 'Square ' + (i + 1) + ', empty');
+    b.addEventListener('click', function () { if (!over && !state[i] && !thinking) play(i, 'X'); });
+    board.appendChild(b); cells.push(b);
+  })(i);
+  var thinking = false;
+  function winner(s) { for (var k = 0; k < WINS.length; k++) { var w = WINS[k]; if (s[w[0]] && s[w[0]] === s[w[1]] && s[w[0]] === s[w[2]]) return { p: s[w[0]], l: w }; } return null; }
+  function minimax(s, turn, me) {
+    var w = winner(s); if (w) return w.p === 'O' ? 10 : -10;
+    var free = []; for (var k = 0; k < 9; k++) if (!s[k]) free.push(k);
+    if (!free.length) return 0;
+    var best = turn === 'O' ? -99 : 99;
+    free.forEach(function (m) { s[m] = turn; var v = minimax(s, turn === 'O' ? 'X' : 'O'); s[m] = null; best = turn === 'O' ? Math.max(best, v) : Math.min(best, v); });
+    return best;
+  }
+  function pick() {
+    var free = []; for (var k = 0; k < 9; k++) if (!state[k]) free.push(k);
+    if (Math.random() < 0.28) return free[Math.floor(Math.random() * free.length)];   // sometimes I slip, so you can win
+    var bestV = -99, moves = [];
+    free.forEach(function (m) { state[m] = 'O'; var v = minimax(state, 'X'); state[m] = null; if (v > bestV) { bestV = v; moves = [m]; } else if (v === bestV) moves.push(m); });
+    return moves[Math.floor(Math.random() * moves.length)];
+  }
+  function mark(i, p) {
+    state[i] = p; var c = cells[i]; c.innerHTML = p === 'X' ? X : O; c.classList.toggle('ttt__cell--o', p === 'O'); c.disabled = true;
+    c.setAttribute('aria-label', 'Square ' + (i + 1) + ', ' + p);
+  }
+  function finish(w) {
+    over = true;
+    cells.forEach(function (c) { c.disabled = true; });
+    if (w) {
+      var a = cells[w.l[0]], b = cells[w.l[2]], br = board.getBoundingClientRect(), s = 300 / br.width;
+      var ra = a.getBoundingClientRect(), rb = b.getBoundingClientRect();
+      lineEl.setAttribute('x1', ((ra.left + ra.width / 2 - br.left) * s).toFixed(1)); lineEl.setAttribute('y1', ((ra.top + ra.height / 2 - br.top) * s).toFixed(1));
+      lineEl.setAttribute('x2', ((rb.left + rb.width / 2 - br.left) * s).toFixed(1)); lineEl.setAttribute('y2', ((rb.top + rb.height / 2 - br.top) * s).toFixed(1));
+      line.classList.remove('is-on'); void line.getBoundingClientRect(); line.classList.add('is-on');
+      if (w.p === 'X') { score.you++; say('win'); } else { score.me++; say('lose'); }
+    } else say('draw');
+    youEl.textContent = score.you; meEl.textContent = score.me; again.hidden = false;
+    if (window.siteSound) window.siteSound(w && w.p === 'X' ? 'open' : 'close');
+  }
+  function play(i, p) {
+    mark(i, p);
+    var w = winner(state);
+    if (w || state.every(Boolean)) return finish(w);
+    if (p === 'X') {
+      thinking = true; say('reply');
+      setTimeout(function () { var m = pick(); mark(m, 'O'); thinking = false; var w2 = winner(state); if (w2 || state.every(Boolean)) finish(w2); }, calm ? 0 : 520);
+    }
+  }
+  function reset() {
+    state = new Array(9).fill(null); over = false; thinking = false; again.hidden = true;
+    cells.forEach(function (c, i) { c.innerHTML = ''; c.disabled = false; c.classList.remove('ttt__cell--o'); c.setAttribute('aria-label', 'Square ' + (i + 1) + ', empty'); });
+    line.classList.remove('is-on'); say('start');
+    starter = starter === 'X' ? 'O' : 'X';
+    if (starter === 'O') { thinking = true; msg.textContent = 'I will start this one.'; setTimeout(function () { mark(pick(), 'O'); thinking = false; }, calm ? 0 : 600); }
+  }
+  again.addEventListener('click', reset);
+  state = new Array(9).fill(null); over = false; msg.textContent = SAYS.start[0];
+})();
