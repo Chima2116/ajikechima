@@ -58,6 +58,18 @@ export function maxScoreFor(duration) {
   return s;
 }
 
+export function classify(status, text) {
+  const t = String(text || '');
+  if (status === 401 || status === 403 || /Invalid API key|JWT|apikey/i.test(t)) return 'key_rejected';
+  if (status === 404 || /PGRST205|PGRST106|does not exist|relation .* does not exist|schema cache/i.test(t)) return 'table_missing';
+  if (status === 0) return 'url_unreachable';
+  return 'http_' + status;
+}
+async function sb(url, opt) {
+  let r; try { r = await fetch(url, opt); } catch (e) { const x = new Error('network'); x.hint = 'url_unreachable'; throw x; }
+  if (!r.ok) { const t = await r.text().catch(() => ''); const x = new Error('supabase'); x.status = r.status; x.detail = t; x.hint = classify(r.status, t); console.error('rockfall supabase', r.status, t.slice(0, 200)); throw x; }
+  return r;
+}
 const base = () => process.env.SUPABASE_URL.replace(/\/$/, '') + '/rest/v1/rockfall_scores';
 // Works with either kind of server key: the older service_role JWT (starts "eyJ") or the newer secret key (starts "sb_secret_").
 const headers = (extra) => {
@@ -68,20 +80,17 @@ const headers = (extra) => {
 };
 
 export async function insertScore(row) {
-  const r = await fetch(base(), { method: 'POST', headers: headers({ Prefer: 'return=representation' }), body: JSON.stringify(row) });
-  if (!r.ok) { const t = await r.text(); const e = new Error('insert failed'); e.status = r.status; e.detail = t; throw e; }
+  const r = await sb(base(), { method: 'POST', headers: headers({ Prefer: 'return=representation' }), body: JSON.stringify(row) });
   return (await r.json())[0];
 }
 export async function countWhere(query) {
-  const r = await fetch(base() + '?select=id&' + query, { headers: headers({ Prefer: 'count=exact', Range: '0-0' }) });
-  if (!r.ok) throw new Error('count failed');
+  const r = await sb(base() + '?select=id&' + query, { headers: headers({ Prefer: 'count=exact', Range: '0-0' }) });
   const cr = r.headers.get('content-range') || '*/0';
   return parseInt(cr.split('/')[1], 10) || 0;
 }
 export async function topScores(limit, sinceIso) {
   const q = '?select=name,score,duration,created_at&order=score.desc,duration.desc,created_at.asc&limit=' + limit + (sinceIso ? '&created_at=gte.' + encodeURIComponent(sinceIso) : '');
-  const r = await fetch(base() + q, { headers: headers() });
-  if (!r.ok) throw new Error('top failed');
+  const r = await sb(base() + q, { headers: headers() });
   return r.json();
 }
 export function rankQuery(score, duration, sinceIso) {

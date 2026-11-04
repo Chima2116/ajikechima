@@ -39,7 +39,7 @@ export default async function handler(req, res) {
     await insertScore({ run_id: tok.id, name, score, duration: Math.round(duration * 10) / 10, ip_hash: hash });
   } catch (e) {
     if (e.status === 409 || /duplicate|unique/i.test(e.detail || '')) return send(res, 409, { error: 'already_submitted' });
-    return send(res, 502, { error: 'store' });
+    return send(res, 502, { error: 'store', hint: e.hint || 'unknown' });
   }
   try {
     const [above, total, top] = await Promise.all([countWhere(rankQuery(score, duration)), countWhere(''), topScores(10)]);

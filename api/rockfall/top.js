@@ -12,5 +12,5 @@ export default async function handler(req, res) {
     const q = since ? 'created_at=gte.' + encodeURIComponent(since) : '';
     const [top, total, above] = await Promise.all([topScores(10, since), countWhere(q), score >= 1 ? countWhere(rankQuery(score, 0, since)) : Promise.resolve(null)]);
     send(res, 200, { top, total, rank: above == null ? null : above + 1 }, 'public, s-maxage=10, stale-while-revalidate=30');
-  } catch (e) { send(res, 502, { error: 'store' }); }
+  } catch (e) { send(res, 502, { error: 'store', hint: e.hint || 'unknown' }); }
 }
