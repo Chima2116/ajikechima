@@ -240,6 +240,7 @@
       moved = false;
       el.setPointerCapture(e.pointerId);
       el.classList.add('is-dragging');
+      box.classList.add('is-used');
       el.style.zIndex = ++top;
     });
     el.addEventListener('pointermove', function (e) {

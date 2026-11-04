@@ -496,7 +496,7 @@ a.work:focus-visible .work__arrow { opacity: 1; transform: none; }
 .cl-item--ball { --x: 70%; --y: 8%; --w: 15%; --r: -8deg; }
 .cl-item--crest { --x: 78%; --y: 52%; --w: 10%; --r: 6deg; }
 .cl-item--pad { --x: 42%; --y: 58%; --w: 22%; --r: 4deg; }
-.cl-squiggle { --x: 8%; --y: 80%; --w: 22%; }
+.cl-squiggle { --x: 8%; --y: 72%; --w: 22%; }
 
 @media (max-width: 899px) {
   .collage { aspect-ratio: 1 / 0.9; margin-top: 1.75rem; margin-bottom: 0.75rem; }
@@ -1197,3 +1197,8 @@ html.js-anim .cl-item { animation: cl-in 0.95s cubic-bezier(0.2, 0.8, 0.2, 1) bo
   .corner .icon-btn { width: 3rem; height: 3rem; }
   .corner .icon-btn + .icon-btn { border-left: 0; border-top: 1px solid var(--guide); }
 }
+
+/* a quiet hint that the pictures can be moved */
+.collage__hint { position: absolute; left: 0.9rem; bottom: 0.85rem; z-index: 1; margin: 0; padding: 0.4rem 0.6rem; font: 0.6875rem/1 var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--guide); background: color-mix(in srgb, var(--bg) 80%, transparent); pointer-events: none; transition: opacity 0.5s ease; }
+.collage.is-used .collage__hint { opacity: 0; }
+@media (max-width: 899px) { .collage__hint { left: 0.6rem; bottom: 0.6rem; font-size: 0.625rem; } }
