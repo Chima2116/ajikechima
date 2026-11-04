@@ -59,7 +59,13 @@ export function maxScoreFor(duration) {
 }
 
 const base = () => process.env.SUPABASE_URL.replace(/\/$/, '') + '/rest/v1/rockfall_scores';
-const headers = (extra) => Object.assign({ apikey: process.env.SUPABASE_SERVICE_ROLE_KEY, Authorization: 'Bearer ' + process.env.SUPABASE_SERVICE_ROLE_KEY, 'Content-Type': 'application/json' }, extra || {});
+// Works with either kind of server key: the older service_role JWT (starts "eyJ") or the newer secret key (starts "sb_secret_").
+const headers = (extra) => {
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const h = { apikey: key, 'Content-Type': 'application/json' };
+  if (key.startsWith('eyJ')) h.Authorization = 'Bearer ' + key;
+  return Object.assign(h, extra || {});
+};
 
 export async function insertScore(row) {
   const r = await fetch(base(), { method: 'POST', headers: headers({ Prefer: 'return=representation' }), body: JSON.stringify(row) });

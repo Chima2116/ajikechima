@@ -6,7 +6,7 @@ The game works without this. Until it is set up, the leaderboard simply stays hi
 2. Open the SQL editor and run `supabase/rockfall.sql`.
 3. In Vercel, open the project's Settings, then Environment Variables, and add (Production, Preview and Development):
    - `SUPABASE_URL`: the project URL (Project Settings, API).
-   - `SUPABASE_SERVICE_ROLE_KEY`: the `service_role` key (keep it secret; it is only used in `api/`).
+   - `SUPABASE_SERVICE_ROLE_KEY`: the secret key (Project Settings, API Keys: the "secret" key, or the legacy `service_role` key). Keep it secret; it is only used in `api/`.
    - `ROCKFALL_SECRET`: any long random string, for example `openssl rand -base64 32`.
 4. Redeploy. The three routes then go live: `POST /api/rockfall/start`, `POST /api/rockfall/score`, `GET /api/rockfall/top`.
 
