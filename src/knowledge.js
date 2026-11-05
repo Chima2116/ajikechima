@@ -55,7 +55,7 @@ export const ENTRIES = [
   },
   {
     keys: ["archive", "older project", "other project", "personal project", "concept"],
-    text: "The archive holds other case studies: client work (Mobihealth, Syncorix, Summit Bank), personal projects (FreelanceFlow, DiveHQ, Xplore, Foodshop) and a concept redesign of Snapchat's settings.",
+    text: "The archive holds other case studies: client work (Mobihealth, Syncorix, Summit Bank), personal projects (FreelanceFlow, DiveHQ, Xplore, Foodshop), the Spaceikon website (designed and developed with Claude Code) and a concept redesign of Snapchat's settings.",
     sources: [S.arch],
   },
   {
@@ -71,6 +71,11 @@ export const ENTRIES = [
   {
     keys: ["foodshop", "food shop", "usefood", "framer", "food vendor", "whatsapp"],
     text: "Foodshop is a personal project: a website for a tool that helps food vendors set up an online store and take orders and payments on WhatsApp, designed and built in Framer.",
+    sources: [S.arch],
+  },
+  {
+    keys: ["spaceikon", "space ikon", "claude code", "architecture", "construction"],
+    text: "Spaceikon is a website for a company working in architecture, construction and urban development. Chimaobi designed and developed it themself, using Claude Code.",
     sources: [S.arch],
   },
   {
