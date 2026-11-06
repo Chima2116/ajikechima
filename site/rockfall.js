@@ -205,7 +205,7 @@
     var pal = null, palN = 0;
     var best = store(true) || { score: 0, time: 0 };
     var g;                           // the current run
-    var raf = 0, last = 0, visible = false, open = false, sound = false, actx = null, resumeGrace = 0;
+    var raf = 0, last = 0, visible = false, open = false, sound = soundPref(), actx = null, resumeGrace = 0;
     var pointer = { x: 0, y: 0, has: false, touch: false };
     var fx = [];                     // particles
     var world = null, T = 0, lvlBanner = 0;
@@ -215,6 +215,10 @@
     function hitR() { return CONFIG.player.hit * (psz() / CONFIG.player.size); }    // hit radius grows with it
     function floorY() { return H - GH() - psz() * 0.98; }                           // where the feet touch the ground
     function addFx(o) { fx.push(Object.assign({ vx: 0, vy: 0, rot: 0, vr: 0, life: 0.6, max: 0.6, s: 3, c: [255, 255, 255] }, o)); }
+
+    function soundPref() {
+      try { var v = localStorage.getItem('rockfall.sound'); if (v === 'on') return true; if (v === 'off') return false; return localStorage.getItem('sound') !== 'off'; } catch (e) { return true; }
+    }
 
     // ---------- layout ----------
     function resize() {
@@ -299,7 +303,7 @@
           var b; for (b in CONFIG.bonuses) if (sec >= +b && !g.bonus[b]) { g.bonus[b] = 1; g.bonusTotal = (g.bonusTotal || 0) + CONFIG.bonuses[b]; toast('+' + CONFIG.bonuses[b] + ' bonus at ' + b + 's'); tone('up'); }
           g.score = sec + (g.bonusTotal || 0); hud();
         }
-        if (lv.i !== g.lastLevel) { var firstLv = g.lastLevel < 0; g.lastLevel = lv.i; hud(); if (!firstLv) levelUp(lv); }
+        if (lv.i !== g.lastLevel) { var firstLv = g.lastLevel < 0; g.lastLevel = lv.i; hud(); Music.setLevel(lv.i); if (!firstLv) levelUp(lv); }
         g.spawnIn -= dt;
         if (g.spawnIn <= 0) { var ok = spawn(lv); g.spawnIn = ok ? lv.gap * (0.8 + g.rand() * 0.45) : 0.12; }
         g.inT += dt; if (g.inT >= 0.1) { g.inT = 0; if (g.inputs.length < 6000) g.inputs.push([Math.round(p.tx), Math.round(p.ty)]); }
@@ -360,6 +364,7 @@
       for (i = 0; i < n; i++) addFx({ kind: 'dust', x: o.x + (Math.random() - 0.5) * o.r * 1.6, y: gy - 2, vx: (Math.random() - 0.5) * 70, vy: -14 - Math.random() * 40, g: -6, r: o.r * (0.22 + Math.random() * 0.2), life: 0.55 + Math.random() * 0.4, max: 0.95, c: c });
       for (i = 0; i < Math.min(4, n); i++) addFx({ x: o.x, y: gy - 3, vx: (Math.random() - 0.5) * 160, vy: -80 - Math.random() * 90, life: 0.5, max: 0.5, rot: Math.random() * 6, vr: (Math.random() - 0.5) * 9, s: 2 + Math.random() * 2, c: c });
       if (state === 'playing' && o.type === 'mega' && !calm) g.shake = Math.max(g.shake, 0.22);
+      if (state === 'playing' && o.type !== 'pebble') tone('land', o.type);
     }
     // a rock went past closer than comfortable
     function nearMiss() {
@@ -380,13 +385,13 @@
     }
     function crash(o) {
       state = 'hit'; g.hitT = 0.85; g.p.hit = 1; g.shake = calm ? 0 : 1; g.flash = 1;
-      burst(g.p.x, g.p.y, 14, 190, [mix(pal.ink, pal.bg, 0.5), pal.accent]); tone('hit');
+      burst(g.p.x, g.p.y, 14, 190, [mix(pal.ink, pal.bg, 0.5), pal.accent]); Music.stop(0.12); tone('hit');
       root.setAttribute('data-rf-state', 'hit'); canvas.style.touchAction = ''; arena.classList.remove('is-playing');
     }
     function finish() {
       state = 'over'; var t = g.t, score = g.score;
       g.newRecord = score > best.score && score > 0;
-      if (g.newRecord) { best = { score: score, time: t }; store(false, best); burst(W / 2, H * 0.4, 46, 280, [pal.accent, pal.ink, mix(pal.accent, pal.bg, 0.5)]); tone('win'); }
+      if (g.newRecord) { best = { score: score, time: t }; store(false, best); burst(W / 2, H * 0.4, 46, 280, [pal.accent, pal.ink, mix(pal.accent, pal.bg, 0.5)]); tone('win'); } else tone('over');
       hud(); overlayOver(t, score); root.setAttribute('data-rf-state', 'over');
       announce('Game over. You survived for ' + fmt(t) + ' and scored ' + score + (g.newRecord ? '. New personal best.' : '.'));
     }
@@ -546,21 +551,21 @@
     }
     function pause() {
       if (state !== 'playing') return;
-      state = 'paused'; root.setAttribute('data-rf-state', 'paused'); arena.classList.remove('is-playing'); canvas.style.touchAction = '';
+      state = 'paused'; Music.stop(0.25); root.setAttribute('data-rf-state', 'paused'); arena.classList.remove('is-playing'); canvas.style.touchAction = '';
       overlay.hidden = false; overlay.className = 'rf__overlay is-pause';
       overlay.innerHTML = '<div class="rf__result"><h3 class="rf__rtitle">Paused</h3><button type="button" class="rf__play" data-rf-resume><span>Resume</span><i aria-hidden="true">&rarr;</i></button></div>';
       overlay.querySelector('[data-rf-resume]').addEventListener('click', resume); announce('Paused.');
     }
     function resume() {
       if (state !== 'paused') return;
-      state = 'playing'; overlay.hidden = true; root.setAttribute('data-rf-state', 'playing'); arena.classList.add('is-playing'); canvas.style.touchAction = 'none'; resumeGrace = 0.6;
+      state = 'playing'; overlay.hidden = true; root.setAttribute('data-rf-state', 'playing'); arena.classList.add('is-playing'); canvas.style.touchAction = 'none'; resumeGrace = 0.6; wakeAudio(); Music.start();
       announce('Resumed.');
     }
     function start() {
       newRun(); state = 'playing'; overlay.hidden = true; setBoardMode(false); hud(); announce('Game started.');
       arena.classList.add('is-playing'); canvas.style.touchAction = 'none'; root.setAttribute('data-rf-state', 'playing');
       tokenP = Leaderboard.start().then(function (tk) { Leaderboard.enabled = true; return tk; }, function () { return null; });
-      resumeGrace = 0.3; ensureAudio(); loop();
+      resumeGrace = 0.3; wakeAudio(); Music.setLevel(0); Music.stop(0.05); Music.start(); loop();
     }
 
     // ---------- input ----------
@@ -576,21 +581,86 @@
 
     // ---------- sound: optional, muted until asked for ----------
     function ensureAudio() { if (!sound || actx) return; try { actx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { actx = null; } }
-    function tone(kind) {
-      if (!sound) return; ensureAudio(); if (!actx) return;
-      var seq = { hit: [[150, 0.18, 'square', 0.05]], up: [[660, 0.08, 'sine', 0.05], [880, 0.12, 'sine', 0.05]], near: [[1175, 0.05, 'sine', 0.03]], win: [[523, 0.1, 'sine', 0.06], [659, 0.1, 'sine', 0.06], [784, 0.18, 'sine', 0.06]] }[kind] || [], t0 = actx.currentTime;
-      seq.forEach(function (n, i) { var o = actx.createOscillator(), gn = actx.createGain(); o.type = n[2]; o.frequency.value = n[0]; gn.gain.setValueAtTime(n[3], t0 + i * 0.1); gn.gain.exponentialRampToValueAtTime(0.0001, t0 + i * 0.1 + n[1]); o.connect(gn); gn.connect(actx.destination); o.start(t0 + i * 0.1); o.stop(t0 + i * 0.1 + n[1] + 0.02); });
+    // ---------- soundtrack and effects: all generated with the Web Audio API, no files ----------
+    // Calm at first (soft pad, a few plucked notes), then the tempo rises, a bass pulse and a heartbeat join in, the
+    // harmony turns tense and the filter opens as the level goes up. It stays quiet underneath the game.
+    function mf(m) { return 440 * Math.pow(2, (m - 69) / 12); }
+    function noiseBuf(ctx, sec) { var n = Math.floor(ctx.sampleRate * sec), b = ctx.createBuffer(1, n, ctx.sampleRate), d = b.getChannelData(0), i; for (i = 0; i < n; i++) d[i] = Math.random() * 2 - 1; return b; }
+    function voice(ctx, dest, type, f, t, dur, gain, attack) {
+      var o = ctx.createOscillator(), gn = ctx.createGain(); o.type = type; o.frequency.value = f;
+      gn.gain.setValueAtTime(0.0001, t); gn.gain.linearRampToValueAtTime(gain, t + (attack || 0.01)); gn.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      o.connect(gn); gn.connect(dest); o.start(t); o.stop(t + dur + 0.05);
     }
-    var pauseBtn = root.querySelector('[data-rf-pause]');
-    if (pauseBtn) pauseBtn.addEventListener('click', function () { if (state === 'playing') pause(); else if (state === 'paused') resume(); });
-    document.addEventListener('keydown', function (e) {
-      if (!visible || e.metaKey || e.ctrlKey || e.altKey) return;
-      var tag = (e.target && e.target.tagName) || ''; if (tag === 'INPUT' || tag === 'TEXTAREA') return;
-      if (e.key === 'p' || e.key === 'P' || (e.key === 'Escape' && state === 'playing')) { if (state === 'playing') pause(); else if (state === 'paused') resume(); }
-    });
+    function thump(ctx, dest, t, gain) {
+      var o = ctx.createOscillator(), gn = ctx.createGain(); o.type = 'sine'; o.frequency.setValueAtTime(82, t); o.frequency.exponentialRampToValueAtTime(44, t + 0.16);
+      gn.gain.setValueAtTime(gain, t); gn.gain.exponentialRampToValueAtTime(0.0001, t + 0.22); o.connect(gn); gn.connect(dest); o.start(t); o.stop(t + 0.25);
+    }
+    function tick(ctx, dest, t, gain) {
+      var n = ctx.createBufferSource(), f = ctx.createBiquadFilter(), gn = ctx.createGain(); n.buffer = noiseBuf(ctx, 0.05); f.type = 'highpass'; f.frequency.value = 6000;
+      gn.gain.setValueAtTime(gain, t); gn.gain.exponentialRampToValueAtTime(0.0001, t + 0.04); n.connect(f); f.connect(gn); gn.connect(dest); n.start(t);
+    }
+    var CHORDS = {   // b = bass note, n = chord tones (MIDI)
+      calm: [{ b: 45, n: [57, 60, 64] }, { b: 41, n: [53, 57, 60] }, { b: 48, n: [55, 60, 64] }, { b: 43, n: [55, 59, 62] }],
+      tense: [{ b: 45, n: [57, 60, 64] }, { b: 41, n: [53, 57, 60] }, { b: 38, n: [53, 57, 62] }, { b: 40, n: [56, 59, 64] }]
+    };
+    function tempoAt(level) { return 76 + level * 11; }
+    // one sixteenth note of the score. level 0..5 decides which layers play.
+    function schedule(ctx, dest, level, step, t, sx) {
+      var s = step % 16, bar = Math.floor(step / 16), ch = (level >= 3 ? CHORDS.tense : CHORDS.calm)[bar % 4], barLen = sx * 16;
+      if (s === 0) {
+        ch.n.forEach(function (m) { voice(ctx, dest, 'triangle', mf(m), t, barLen * 1.05, 0.032, barLen * 0.35); });
+        if (level >= 4) { voice(ctx, dest, 'sawtooth', mf(ch.b - 12), t, barLen, 0.022, barLen * 0.3); voice(ctx, dest, 'sawtooth', mf(ch.b - 11), t, barLen, 0.014, barLen * 0.3); }   // a drone with a minor second rubbing against it
+      }
+      if (level >= 2 && (s === 0 || s === 8 || (level >= 3 && (s === 4 || s === 12)))) voice(ctx, dest, 'sine', mf(ch.b), t, sx * 3.5, s % 8 ? 0.07 : 0.1, 0.01);
+      var every = level <= 3 ? 2 : 1, sparse = [0, 6, 10], play = level <= 1 ? sparse.indexOf(s) > -1 : s % every === 0;
+      if (play) { var seq = [0, 1, 2, 1], idx = (level <= 1 ? sparse.indexOf(s) + bar : Math.floor(step / every)) % 4; voice(ctx, dest, 'triangle', mf(ch.n[seq[idx]] + 12), t, sx * 4, level >= 4 ? 0.036 : 0.03, 0.008); }
+      if (level >= 3 && s % (level >= 4 ? 4 : 8) === 0) thump(ctx, dest, t, 0.1 + level * 0.012);   // heartbeat
+      if (level >= 5 && s % 2 === 1) tick(ctx, dest, t, 0.018);
+    }
+    var mus = { out: null, lp: null, timer: 0, step: 0, next: 0, level: 0, on: false };
+    var Music = {
+      start: function () {
+        if (!sound || !actx || mus.on) return;
+        mus.on = true;
+        var lp = actx.createBiquadFilter(), out = actx.createGain(), comp = actx.createDynamicsCompressor(), now = actx.currentTime;
+        lp.type = 'lowpass'; lp.frequency.value = 900 + mus.level * 560; lp.Q.value = 0.5; out.gain.setValueAtTime(0.0001, now); out.gain.linearRampToValueAtTime(1.6, now + 1.4);
+        lp.connect(out); out.connect(comp); comp.connect(actx.destination); mus.lp = lp; mus.out = out;
+        mus.next = now + 0.1; mus.step = 0; clearInterval(mus.timer); mus.timer = setInterval(Music.tick, 40);
+      },
+      tick: function () {
+        if (!mus.on || !actx) return; var sx = 60 / tempoAt(mus.level) / 4;
+        while (mus.next < actx.currentTime + 0.18) { schedule(actx, mus.lp, mus.level, mus.step, mus.next, sx); mus.next += sx; mus.step++; }
+      },
+      setLevel: function (i) { mus.level = i; if (mus.on && mus.lp && actx) { var n = actx.currentTime; mus.lp.frequency.cancelScheduledValues(n); mus.lp.frequency.setValueAtTime(mus.lp.frequency.value, n); mus.lp.frequency.linearRampToValueAtTime(900 + i * 560, n + 2); } },
+      stop: function (fade) {
+        if (!mus.on) return; mus.on = false; clearInterval(mus.timer);
+        if (mus.out && actx) { var n = actx.currentTime; mus.out.gain.cancelScheduledValues(n); mus.out.gain.setValueAtTime(Math.max(0.0001, mus.out.gain.value), n); mus.out.gain.linearRampToValueAtTime(0.0001, n + (fade || 0.3)); }
+      }
+    };
+    // the hit: a deep thud, a crunch of gravel and a falling, slightly out-of-tune sting
+    function sfxHit() {
+      var t = actx.currentTime, o = actx.createOscillator(), g1 = actx.createGain(), n = actx.createBufferSource(), f = actx.createBiquadFilter(), g2 = actx.createGain();
+      o.type = 'sine'; o.frequency.setValueAtTime(130, t); o.frequency.exponentialRampToValueAtTime(36, t + 0.4); g1.gain.setValueAtTime(0.4, t); g1.gain.exponentialRampToValueAtTime(0.0001, t + 0.45); o.connect(g1); g1.connect(actx.destination); o.start(t); o.stop(t + 0.5);
+      n.buffer = noiseBuf(actx, 0.3); f.type = 'lowpass'; f.frequency.setValueAtTime(2200, t); f.frequency.exponentialRampToValueAtTime(300, t + 0.3); g2.gain.setValueAtTime(0.26, t); g2.gain.exponentialRampToValueAtTime(0.0001, t + 0.3); n.connect(f); f.connect(g2); g2.connect(actx.destination); n.start(t);
+      [220, 233].forEach(function (fr) {
+        var s = actx.createOscillator(), sg = actx.createGain(), sf = actx.createBiquadFilter(); s.type = 'sawtooth'; s.frequency.setValueAtTime(fr, t + 0.02); s.frequency.exponentialRampToValueAtTime(fr / 2, t + 0.7);
+        sf.type = 'lowpass'; sf.frequency.value = 900; sg.gain.setValueAtTime(0.05, t + 0.02); sg.gain.exponentialRampToValueAtTime(0.0001, t + 0.75); s.connect(sf); sf.connect(sg); sg.connect(actx.destination); s.start(t + 0.02); s.stop(t + 0.8);
+      });
+    }
+    function sfxOver() { var t = actx.currentTime; [[440, 0], [349, 0.28], [294, 0.56]].forEach(function (n) { voice(actx, actx.destination, 'triangle', n[0], t + 0.05 + n[1], 0.6, 0.06, 0.02); }); }
+    function sfxLand(type) { var t = actx.currentTime; thump(actx, actx.destination, t, type === 'mega' ? 0.12 : 0.06); }
+    function tone(kind, arg) {
+      if (!sound) return; ensureAudio(); if (!actx) return;
+      if (kind === 'hit') return sfxHit(); if (kind === 'over') return sfxOver(); if (kind === 'land') return sfxLand(arg);
+      var seq = { up: [[660, 0.08, 'sine', 0.05], [880, 0.12, 'sine', 0.05]], near: [[1175, 0.05, 'sine', 0.03]], win: [[523, 0.1, 'sine', 0.06], [659, 0.1, 'sine', 0.06], [784, 0.18, 'sine', 0.06]] }[kind] || [], t0 = actx.currentTime;
+      seq.forEach(function (n, i) { voice(actx, actx.destination, n[2], n[0], t0 + i * 0.1, n[1], n[3], 0.005); });
+    }
+    function wakeAudio() { ensureAudio(); if (actx && actx.state === 'suspended' && actx.resume) actx.resume(); }
+    function paintSound() { soundBtn.setAttribute('aria-pressed', sound ? 'true' : 'false'); soundBtn.setAttribute('aria-label', sound ? 'Sound on, turn it off' : 'Sound off, turn it on'); }
+    paintSound();
     soundBtn.addEventListener('click', function () {
-      sound = !sound; soundBtn.setAttribute('aria-pressed', sound ? 'true' : 'false'); soundBtn.setAttribute('aria-label', sound ? 'Sound on, turn it off' : 'Sound off, turn it on');
-      if (sound) { ensureAudio(); if (actx && actx.resume) actx.resume(); tone('up'); }
+      sound = !sound; paintSound(); try { localStorage.setItem('rockfall.sound', sound ? 'on' : 'off'); } catch (e) {}
+      if (sound) { wakeAudio(); tone('up'); if (state === 'playing') Music.start(); } else Music.stop(0.25);
     });
 
     // ---------- open, close, pause, resize ----------
@@ -612,6 +682,7 @@
     hud(); setOpen(true); window.addEventListener('load', function () { resize(); });
     Leaderboard.probe().then(function (ok) { if (ok && state === 'ready') overlayReady(); });
     if ('ResizeObserver' in window) { var rzT; new ResizeObserver(function () { clearTimeout(rzT); rzT = setTimeout(function () { if (open && Math.abs(arena.clientHeight - H) > 2 || Math.abs(arena.clientWidth - W) > 2) resize(); }, 60); }).observe(arena); }
+    window.Rockfall.audio = { schedule: schedule, tempoAt: tempoAt };   // exposed so the score can be rendered and checked offline
     return { destroy: function () { cancelAnimationFrame(raf); } };
   }
 
