@@ -12,9 +12,9 @@
   --font-display: "Geist", "Helvetica Neue", Arial, sans-serif;
   --font-body: "Geist", "Helvetica Neue", Arial, sans-serif;
   --font-mono: "Geist Mono", ui-monospace, Menlo, Consolas, monospace;
-  --gutter: clamp(20px, 4vw, 48px);
-  --rail: 14rem;
-  --gap: clamp(2rem, 5vw, 5rem);
+  --gutter: clamp(16px, 3vw, 40px);
+  --rail: 11.5rem;
+  --gap: clamp(1.5rem, 3vw, 3rem);
   --main-pr: clamp(1.25rem, 3vw, 2.5rem);
   color-scheme: light;
 }
@@ -85,7 +85,7 @@ a:focus-visible, button:focus-visible {
   position: relative;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  max-width: 1200px;
+  max-width: 1360px;
   margin-inline: auto;
   padding-inline: var(--gutter);
 }
@@ -93,20 +93,20 @@ a:focus-visible, button:focus-visible {
 .rail { padding-block: 1.5rem 0.5rem; }
 .rail__name {
   font-weight: 500;
-  font-size: 1rem;
+  font-size: 0.9375rem;
   letter-spacing: -0.005em;
   color: inherit;
   text-decoration: none;
 }
-.rail__role { margin-top: 0.1rem; color: var(--muted); }
-.rail__meta { margin-top: 0.7rem; font-family: var(--font-mono); font-size: 0.75rem; line-height: 1.55; color: var(--muted); }
+.rail__role { margin-top: 0.1rem; font-size: 0.8125rem; color: var(--muted); }
+.rail__meta { margin-top: 0.6rem; font-family: var(--font-mono); font-size: 0.6875rem; line-height: 1.55; color: var(--muted); }
 .rail__nav { display: none; margin-top: 2rem; }
 .rail__nav a {
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  padding-block: 0.25rem;
-  font-size: 0.875rem;
+  padding-block: 0.2rem;
+  font-size: 0.8125rem;
   color: var(--muted);
   text-decoration: none;
 }
@@ -121,7 +121,7 @@ a:focus-visible, button:focus-visible {
 .rail__nav a:hover { color: var(--ink); }
 .rail__nav a[aria-current="true"] { color: var(--ink); }
 .rail__nav a[aria-current="true"]::before { background: var(--accent); }
-.rail__foot { margin-top: 1.25rem; display: flex; flex-wrap: wrap; gap: 0.35rem 1.25rem; font-size: 0.875rem; }
+.rail__foot { margin-top: 1.25rem; display: flex; flex-wrap: wrap; gap: 0.35rem 1.25rem; font-size: 0.8125rem; }
 .rail__links { display: flex; flex-wrap: wrap; gap: 0.35rem 1.25rem; }
 .rail__links a { color: var(--ink); text-underline-offset: 0.22em; text-decoration-color: var(--guide); }
 .rail__links a:hover { color: var(--accent); text-decoration-color: var(--accent); }
