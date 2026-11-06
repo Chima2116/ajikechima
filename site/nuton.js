@@ -11,17 +11,6 @@
     new IntersectionObserver(function (es) { cb(es[0].isIntersecting); }, { threshold: 0.25 }).observe(el);
   }
 
-  // Short version: hides the longer paragraphs and keeps the headline lines
-  var tl = page.querySelector('[data-nu-tldr]');
-  if (tl) {
-    var setT = function (on) { page.classList.toggle('is-tldr', on); tl.setAttribute('aria-pressed', on ? 'true' : 'false'); };
-    try { setT(localStorage.getItem('nu.tldr') === '1'); } catch (e) {}
-    tl.addEventListener('click', function () {
-      var on = tl.getAttribute('aria-pressed') !== 'true'; setT(on); sfx('toggle');
-      try { localStorage.setItem('nu.tldr', on ? '1' : '0'); } catch (e) {}
-    });
-  }
-
   // Hero reel: steps through the real screens; pauses off screen and with reduced motion
   var reel = page.querySelector('[data-nu-reel]');
   if (reel) {
@@ -201,6 +190,21 @@
         if (v.offsetParent) { v.preload = 'auto'; var p = v.play(); if (p && p.catch) p.catch(function () {}); } else v.pause();
       });
     }, 80);
+  });
+
+  // Metrics count up once, the first time they scroll into view
+  page.querySelectorAll('[data-count]').forEach(function (el) {
+    var end = +el.getAttribute('data-count'), suf = el.getAttribute('data-suffix') || '';
+    if (calm) return;
+    var done = false; el.textContent = '0' + suf;
+    onView(el, function (v) {
+      if (!v || done) return; done = true; var t0 = performance.now(), D = 1400;
+      (function step(now) {
+        var p = Math.min(1, (now - t0) / D), e = 1 - Math.pow(1 - p, 3);
+        el.textContent = Math.round(end * e).toLocaleString('en-US') + suf;
+        if (p < 1) requestAnimationFrame(step);
+      })(t0);
+    });
   });
 
   // Quiz: every answer explains itself
