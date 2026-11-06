@@ -1611,3 +1611,36 @@ html.js-anim .cl-item { animation: cl-in 0.95s cubic-bezier(0.2, 0.8, 0.2, 1) bo
   .nu-ring__node { min-width: 4.4rem; padding: 0.4rem 0.5rem 0.45rem; }
   .nu-ring__node span { font-size: 0.75rem; }
 }
+
+/* ---- Nuton case study v3: horizontal rows like a studio case study ----
+   Label on the left, statement and text in a right column, media breaking out below. */
+.cs-body p.nu-say { max-width: 32ch; font-size: clamp(1.0625rem, 1.5vw, 1.25rem); line-height: 1.3; }
+.nu-page .cs-body p.nu-long, .nu-page .cs-body .nu-long p { color: color-mix(in srgb, var(--ink) 76%, var(--bg)); }
+.nu-page .cs-section__label { font-size: 0.875rem; font-weight: 400; color: var(--muted); }
+.nu-rowlabel { font-size: 0.875rem; color: var(--muted); }
+.nu-sub { margin-top: 0; }
+
+/* the stage: a Nuton-blue panel the window sits on */
+.nu-stage { position: relative; margin-top: 1rem; padding: clamp(0.75rem, 3.5vw, 2rem); border-radius: var(--nu-r); overflow: hidden; background: radial-gradient(120% 100% at 12% 0%, #3b72ff 0%, #2159EB 38%, #1a47c4 75%, #163FBA 100%); }
+.nu-stage::before { content: ""; position: absolute; inset: 0; background-image: radial-gradient(rgb(255 255 255 / 0.16) 1px, transparent 1.2px); background-size: 22px 22px; -webkit-mask-image: linear-gradient(180deg, #000, transparent 75%); mask-image: linear-gradient(180deg, #000, transparent 75%); pointer-events: none; }
+.nu-stage .nu-win { position: relative; margin: 0; border-color: rgb(255 255 255 / 0.14); box-shadow: 0 40px 70px -28px rgb(4 12 48 / 0.7), 0 2px 0 rgb(255 255 255 / 0.06) inset; }
+.nu-tabs .nu-stage, .nu-cmp .nu-stage { margin-top: 0.85rem; }
+.nu-win--solo { margin-top: 0; }
+.nu-page .cs-body > .nu-stage { margin-top: 1.5rem; }
+
+@media (min-width: 1100px) {
+  .nu-page .cs-section > .grid { display: grid; grid-template-columns: 10rem minmax(0, 1fr); column-gap: 1.5rem; align-items: start; }
+  .nu-page .cs-section__body { display: contents; }
+  .nu-page .cs-section__label { grid-column: 1; grid-row: 1; margin: 0; padding-top: 0.15rem; }
+  .nu-page .cs-section__body > * { grid-column: 1 / -1; }
+  .nu-page .cs-section__body > .nu-say,
+  .nu-page .cs-section__body > .nu-long,
+  .nu-page .cs-section__body > .nu-rowtext,
+  .nu-page .cs-section__body > p.nu-cap,
+  .nu-page .cs-section__body > p.cs-stats__note,
+  .nu-page .cs-section__body > .pj-cta { grid-column: 2; }
+  .nu-page .cs-section__body > .nu-rowlabel { grid-column: 1; margin-top: clamp(2.25rem, 5vw, 3rem); padding-top: 0.15rem; }
+  .nu-page .cs-section__body > .nu-rowtext { margin-top: clamp(2.25rem, 5vw, 3rem); }
+  .nu-page .cs-section__body > .nu-rowlabel + .nu-rowtext { margin-top: clamp(2.25rem, 5vw, 3rem); }
+  .nu-page .cs-section__body > .nu-say:first-of-type { grid-row: 1; }
+}
