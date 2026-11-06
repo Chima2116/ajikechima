@@ -1957,3 +1957,24 @@ html { scroll-padding-top: 0.5rem; }
 .rf__bact { gap: 0.9rem; }
 .rf .rf__bact { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.9rem; }
 .rf .rf__bact .rf__btn { height: 2.6rem; font-size: 0.8125rem; }
+
+/* Nuton rows at mid widths (rail + narrower window): keep label left, text right, side by side */
+@media (min-width: 760px) and (max-width: 1099.98px) {
+  .nu-page .cs-section > .grid { display: grid; grid-template-columns: 8rem minmax(0, 1fr); column-gap: 1.5rem; align-items: start; }
+  .nu-page .cs-section__body { display: contents; }
+  .nu-page .cs-section__label { grid-column: 1; grid-row: 1; margin: 0; padding-top: 0.15rem; }
+  .nu-page .cs-section__body > * { grid-column: 1 / -1; }
+  .nu-page .cs-section__body > .nu-say, .nu-page .cs-section__body > .nu-long, .nu-page .cs-section__body > .nu-rowtext, .nu-page .cs-section__body > p.nu-cap, .nu-page .cs-section__body > p.cs-stats__note, .nu-page .cs-section__body > .pj-cta { grid-column: 2; }
+  .nu-page .cs-section__body > .nu-rowlabel { grid-column: 1; margin-top: clamp(2.25rem, 5vw, 3rem); padding-top: 0.15rem; text-align: left; }
+  .nu-page .cs-section__body > .nu-rowtext { margin-top: clamp(2.25rem, 5vw, 3rem); }
+  .nu-page .cs-section__body > .nu-say:first-of-type { grid-row: 1; }
+  .nu-page .cs-body p.nu-say, .nu-page .cs-body .nu-sub { max-width: 36ch; }
+}
+
+/* Nuton rows: beat the generic case-study grid rules (label left, text right, same row) */
+@media (min-width: 760px) {
+  .nu-page .cs-section > .grid > .cs-section__body > .nu-rowlabel { grid-column: 1; text-align: left; justify-self: start; }
+  .nu-page .cs-section > .grid > .cs-section__body > .nu-rowtext,
+  .nu-page .cs-section > .grid > .cs-section__body > .nu-long,
+  .nu-page .cs-section > .grid > .cs-section__body > .nu-say { grid-column: 2; }
+}

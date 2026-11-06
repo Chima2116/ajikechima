@@ -100,12 +100,13 @@
       if (user) sfx('portrait');
     };
     var tick2 = function () { if (inView && !taken && !hover && !calm) go(at + 1); };
+    var rest = 0, hold = function () { taken = true; clearInterval(tm); clearTimeout(rest); rest = setTimeout(function () { taken = false; run2(); }, 9000); };
     var run2 = function () { clearInterval(tm); if (!calm && !taken) tm = setInterval(tick2, 3800); };
     nodes.forEach(function (n, k) {
-      n.addEventListener('click', function () { taken = true; clearInterval(tm); go(k, true); });
+      n.addEventListener('click', function () { hold(); go(k, true); });
       n.addEventListener('keydown', function (e) {
         var d = e.key === 'ArrowRight' || e.key === 'ArrowDown' ? 1 : e.key === 'ArrowLeft' || e.key === 'ArrowUp' ? -1 : 0;
-        if (d) { e.preventDefault(); taken = true; clearInterval(tm); var t = (k + d + nodes.length) % nodes.length; go(t, true); nodes[t].focus(); }
+        if (d) { e.preventDefault(); hold(); var t = (k + d + nodes.length) % nodes.length; go(t, true); nodes[t].focus(); }
       });
     });
     lp.addEventListener('pointerenter', function (e) { if (e.pointerType === 'mouse') hover = true; });
