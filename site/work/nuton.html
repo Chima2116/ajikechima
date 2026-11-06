@@ -119,7 +119,7 @@
       <h2 class="section__title cs-section__label" id="before-title">Where it started</h2>
       <div class="cs-section__body cs-body">
         <p class="nu-say">The first version stopped at the summary.</p>
-        <p class="nu-long">I designed that first version too. You uploaded a document or pasted a link, and Nuton returned a summary, a chat, flashcards and a quiz, all in tabs that looked the same. There was no path through them, no tutor that knew where you were, and nothing to bring you back the next day. Flip between the two to compare.</p>
+        <p class="nu-long">I designed that first version too. You uploaded a document or pasted a link, and Nuton returned a summary, a chat, flashcards and a quiz, all in tabs that looked the same. There was no path through them, no tutor that knew where you were, and nothing to bring you back the next day. Drag the handle to compare.</p>
         <div class="nu-cmp" data-nu-cmp>
           <div class="nu-cmp__ctl">
             <div class="nu-seg" role="tablist" aria-label="Choose a screen">
@@ -128,15 +128,19 @@
               <button type="button" role="tab" aria-selected="false" data-before="../assets/nuton/cs/cmp-old-library.webp" data-after="../assets/nuton/cs/cmp-library.webp">Library</button>
             </div>
             <div class="nu-seg nu-seg--accent" role="group" aria-label="Version">
-              <button type="button" data-ver="old" aria-pressed="true">First version</button>
-              <button type="button" data-ver="new" aria-pressed="false">Redesign</button>
+              <button type="button" data-ver="0" aria-pressed="false">First version</button>
+              <button type="button" data-ver="100" aria-pressed="false">Redesign</button>
             </div>
           </div>
           <figure class="nu-win">
-            <div class="pj-bar"><span class="pj-dots"><i></i><i></i><i></i></span><span class="pj-url" data-nu-ver>First version</span></div>
-            <div class="nu-win__stack">
+            <div class="pj-bar"><span class="pj-dots"><i></i><i></i><i></i></span><span class="pj-url">Drag to compare</span></div>
+            <div class="nu-win__stack nu-cmp__stack" style="--x:50%">
               <img class="nu-cmp__new" src="../assets/nuton/cs/cmp-start.webp" alt="Redesigned screen" width="1600" height="1000" loading="lazy">
               <img class="nu-cmp__old" src="../assets/nuton/cs/cmp-old-start.webp" alt="First version screen" width="1600" height="1000" loading="lazy">
+              <span class="nu-cmp__tag nu-cmp__tag--l">First version</span>
+              <span class="nu-cmp__tag nu-cmp__tag--r">Redesign</span>
+              <span class="nu-cmp__bar" aria-hidden="true"><i></i></span>
+              <input class="nu-cmp__range" type="range" min="0" max="100" value="50" aria-label="Drag to compare the first version with the redesign">
             </div>
           </figure>
         </div>

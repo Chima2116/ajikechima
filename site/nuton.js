@@ -49,16 +49,25 @@
     show(0);
   }
 
-  // Before and after: pick a screen, flip between the first version and the redesign
+  // Before and after: drag the handle, or snap to either end; pick a screen
   page.querySelectorAll('[data-nu-cmp]').forEach(function (c) {
-    var oldI = c.querySelector('.nu-cmp__old'), newI = c.querySelector('.nu-cmp__new'), lab = c.querySelector('[data-nu-ver]');
-    var screens = c.querySelectorAll('[role="tab"]'), vers = c.querySelectorAll('[data-ver]');
-    var setV = function (v) {
-      c.classList.toggle('is-new', v === 'new');
-      vers.forEach(function (x) { x.setAttribute('aria-pressed', x.getAttribute('data-ver') === v ? 'true' : 'false'); });
-      lab.textContent = v === 'new' ? 'Redesign' : 'First version';
+    var stack = c.querySelector('.nu-cmp__stack'), range = c.querySelector('.nu-cmp__range');
+    var oldI = c.querySelector('.nu-cmp__old'), newI = c.querySelector('.nu-cmp__new');
+    var screens = c.querySelectorAll('[role="tab"]'), snaps = c.querySelectorAll('[data-ver]'), anim = 0;
+    var setX = function (v) {
+      range.value = v; stack.style.setProperty('--x', v + '%');
+      snaps.forEach(function (x) { x.setAttribute('aria-pressed', +x.getAttribute('data-ver') === Math.round(v) ? 'true' : 'false'); });
     };
-    vers.forEach(function (x) { x.addEventListener('click', function () { setV(x.getAttribute('data-ver')); sfx('tap'); }); });
+    var glide = function (to) {
+      cancelAnimationFrame(anim); var from = +range.value;
+      if (calm) { setX(to); return; }
+      var t0 = performance.now();
+      (function step(now) { var p = Math.min(1, (now - t0) / 500), e = 1 - Math.pow(1 - p, 3); setX(from + (to - from) * e); if (p < 1) anim = requestAnimationFrame(step); })(t0);
+    };
+    var touched = false;
+    stack.addEventListener('pointerdown', function () { touched = true; });
+    range.addEventListener('input', function () { touched = true; cancelAnimationFrame(anim); setX(+range.value); });
+    snaps.forEach(function (x) { x.addEventListener('click', function () { touched = true; glide(+x.getAttribute('data-ver')); sfx('tap'); }); });
     screens.forEach(function (b, k) {
       b.tabIndex = k ? -1 : 0;
       b.addEventListener('click', function () {
@@ -70,10 +79,16 @@
         if (d) { e.preventDefault(); var n = screens[(k + d + screens.length) % screens.length]; n.focus(); n.click(); }
       });
     });
-    // once it scrolls into view, show the redesign so the change reads as the point
+    // a small nudge the first time it scrolls into view, so it reads as draggable
     if (!calm) {
-      var shown = false;
-      onView(c, function (v) { if (v && !shown) { shown = true; setTimeout(function () { if (!c.classList.contains('is-new')) setV('new'); }, 900); } });
+      var nudged = false;
+      onView(stack, function (v) {
+        if (!v || nudged) return; nudged = true; var t0 = performance.now();
+        (function step(now) {
+          var t = (now - t0) / 1400; if (t > 1 || touched) { if (!touched) setX(+range.value); return; }
+          stack.style.setProperty('--x', (50 + Math.sin(t * Math.PI * 2) * 14 * (1 - t)).toFixed(2) + '%'); requestAnimationFrame(step);
+        })(t0);
+      });
     }
   });
 
