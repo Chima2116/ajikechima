@@ -46,7 +46,18 @@
   }
   var Leaderboard = {
     enabled: false, ready: null,
-    probe: function () { if (!this.ready) this.ready = jfetch(API + '/top?range=all').then(function () { Leaderboard.enabled = true; return true; }, function () { Leaderboard.enabled = false; return false; }); return this.ready; },
+    // asks the server once, retrying a couple of times so a slow cold start does not switch the board off for the whole visit
+    probe: function (force) {
+      if (this.ready && !force) return this.ready;
+      var n = 0;
+      function once() {
+        return jfetch(API + '/top?range=all').then(function () { Leaderboard.enabled = true; return true; }, function () {
+          if (++n < 3) return new Promise(function (r) { setTimeout(r, 700 * n); }).then(once);
+          Leaderboard.enabled = false; return false;
+        });
+      }
+      this.ready = once(); return this.ready;
+    },
     start: function () { return jfetch(API + '/start', { method: 'POST' }); },
     submit: function (run) { return jfetch(API + '/score', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(run) }); },
     top: function (range, score) { return jfetch(API + '/top?range=' + (range || 'all') + (score ? '&score=' + score : '')); }
@@ -441,19 +452,25 @@
         '<p class="rf__headline">One character. Endless falling rocks. How long can you survive?</p>' +
         '<button type="button" class="rf__play" data-rf-start><span>Let\'s play</span><i aria-hidden="true">&rarr;</i></button>' +
         '<p class="rf__controls">' + (coarse ? 'Drag your finger' : 'Move with your cursor') + ' &middot; Dodge everything</p>' +
-        (Leaderboard.enabled ? '<button type="button" class="rf__lbtn" data-rf-board>Leaderboard</button>' : '') + '</div>';
+        (Leaderboard.enabled ? '<div class="rf__lbrow"><button type="button" class="rf__lbbtn" data-rf-board><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6 3.5h8v4.2a4 4 0 0 1-8 0zM6 5H3.5c0 2 1 3.4 2.6 3.8M14 5h2.5c0 2-1 3.4-2.6 3.8M10 11.7V15M7 16.5h6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Leaderboard</button><ol class="rf__podium" data-rf-podium aria-label="Top players"></ol></div>' : '') + '</div>';
       overlay.querySelector('[data-rf-start]').addEventListener('click', start);
       var bb = overlay.querySelector('[data-rf-board]'); if (bb) bb.addEventListener('click', function () { showBoard({ range: 'all', back: overlayReady }); });
+      if (Leaderboard.enabled) Leaderboard.top('all').then(function (d) {
+        var ol = overlay.querySelector('[data-rf-podium]'); if (!ol || state !== 'ready') return;
+        (d.top || []).slice(0, 3).forEach(function (r, i) { var li = el('li', ''); li.appendChild(el('b', '', String(i + 1))); li.appendChild(el('span', '', r.name)); li.appendChild(el('em', '', String(r.score))); ol.appendChild(li); });
+      }, function () {});
     }
     function overlayOver(t, score) {
       setBoardMode(false); overlay.hidden = false; overlay.className = 'rf__overlay is-over' + (g.newRecord ? ' is-record' : '');
       var can = Leaderboard.enabled && tokenP && score >= 1, run = g;
+      if (!can && tokenP && score >= 1) Promise.resolve(tokenP).then(function (tk) { if (tk && tk.token && state === 'over' && !overlay.querySelector('[data-rf-form]')) overlayOver(t, score); });
       overlay.innerHTML = '<div class="rf__result">' + (g.newRecord ? '<p class="rf__rbadge"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2.5l2.2 4.6 5 .7-3.6 3.5.9 5-4.5-2.4-4.5 2.4.9-5L2.8 7.8l5-.7z" fill="currentColor"/></svg>New record</p>' : '') +
         '<h3 class="rf__rtitle">That was close.</h3><p class="rf__rsub">You survived for <b>' + fmt(t) + '</b>. Think you can beat it?</p>' +
         '<dl class="rf__sum"><div><dt>Score</dt><dd>' + score + '</dd></div><div><dt>Time</dt><dd>' + fmt(t) + '</dd></div><div><dt>Best</dt><dd>' + best.score + '</dd></div></dl>' +
         (can ? '<form class="rf__form" data-rf-form novalidate><label class="rf__label" for="rf-name">Put your score on the leaderboard</label><div class="rf__field"><input id="rf-name" name="name" type="text" maxlength="16" autocomplete="nickname" autocapitalize="words" spellcheck="false" placeholder="Your name" aria-describedby="rf-err"><button type="submit" class="rf__btn">Submit score</button></div><p class="rf__err" id="rf-err" data-rf-err role="alert" hidden></p></form><div class="rf__row2"><button type="button" class="rf__play rf__play--sm" data-rf-start><span>One more round</span><i aria-hidden="true">&rarr;</i></button><button type="button" class="rf__ghost" data-rf-skip>View leaderboard</button></div>'
-          : '<button type="button" class="rf__play" data-rf-start><span>One more round</span><i aria-hidden="true">&rarr;</i></button>') + '</div>';
+          : '<div class="rf__row2"><button type="button" class="rf__play" data-rf-start><span>One more round</span><i aria-hidden="true">&rarr;</i></button>' + (Leaderboard.enabled ? '<button type="button" class="rf__ghost" data-rf-lbview>Leaderboard</button>' : '') + '</div>') + '</div>';
       overlay.querySelector('[data-rf-start]').addEventListener('click', start);
+      var lv = overlay.querySelector('[data-rf-lbview]'); if (lv) lv.addEventListener('click', function () { showBoard({ range: 'all', hypo: score, back: function () { overlayOver(t, score); } }); });
       if (!can) return;
       var form = overlay.querySelector('[data-rf-form]'), input = form.elements.name, err = overlay.querySelector('[data-rf-err]'), btn = form.querySelector('button');
       input.value = name;
@@ -542,7 +559,7 @@
     function start() {
       newRun(); state = 'playing'; overlay.hidden = true; setBoardMode(false); hud(); announce('Game started.');
       arena.classList.add('is-playing'); canvas.style.touchAction = 'none'; root.setAttribute('data-rf-state', 'playing');
-      tokenP = Leaderboard.enabled ? Leaderboard.start().catch(function () { return null; }) : null;
+      tokenP = Leaderboard.start().then(function (tk) { Leaderboard.enabled = true; return tk; }, function () { return null; });
       resumeGrace = 0.3; ensureAudio(); loop();
     }
 
