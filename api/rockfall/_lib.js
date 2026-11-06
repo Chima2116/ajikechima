@@ -111,11 +111,16 @@ export const weekAgo = () => new Date(Date.now() - 7 * 86400000).toISOString();
 export async function nameTaken(name, owner) {
   const esc = encodeURIComponent(name.replace(/[\\%_]/g, '\\$&'));
   let rows;
-  try { rows = await json(await sb(base() + '?select=owner&name=ilike.' + esc + '&limit=50', { headers: headers() })); }
+  try { rows = await json(await sb(base() + '?select=id,owner,score&name=ilike.' + esc + '&limit=50', { headers: headers() })); }
   catch (e) {
-    if (e.status === 400 && /owner/i.test(e.detail || '')) rows = await json(await sb(base() + '?select=name&name=ilike.' + esc + '&limit=50', { headers: headers() }));   // owner column not added yet: every existing name counts as taken
+    if (e.status === 400 && /owner/i.test(e.detail || '')) rows = await json(await sb(base() + '?select=id,score&name=ilike.' + esc + '&limit=50', { headers: headers() }));   // owner column not added yet: every existing name counts as taken
     else throw e;
   }
-  if (!rows.length) return false;
-  return !rows.every((r) => owner && r.owner === owner);
+  if (!rows.length) return { taken: false, mine: null };
+  if (!rows.every((r) => owner && r.owner === owner)) return { taken: true, mine: null };
+  // the name is this player's own: one entry per name, so hand back the best row to be improved in place
+  return { taken: false, mine: rows.sort((a, b) => b.score - a.score)[0] };
+}
+export async function improveScore(id, fields) {
+  await sb(base() + '?id=eq.' + encodeURIComponent(id), { method: 'PATCH', headers: headers({ Prefer: 'return=minimal' }), body: JSON.stringify(fields) });
 }
