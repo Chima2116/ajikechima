@@ -4,7 +4,7 @@ const S = {
   nuton: { name: "Nuton case study", href: B + "work/nuton.html" },
   kova: { name: "Kova case study", href: B + "work/kova.html" },
   mobi: { name: "Mobihealth case study", href: B + "work/mobihealth.html" },
-  sync: { name: "Syncorix case study", href: B + "work/syncorix.html" },
+  sync: { name: "Syncorix Global case study", href: B + "work/syncorix.html" },
   exp: { name: "Experience", href: B + "index.html#experience" },
   how: { name: "How I work", href: B + "index.html#how" },
   arch: { name: "Archive", href: B + "index.html#more-work" },
@@ -30,7 +30,7 @@ export const ENTRIES = [
   },
   {
     keys: ["ai product", "ai-assisted", "vibe", "artificial", "design ai", "ai design", "work with ai"],
-    text: "Chimaobi designs AI products: Nuton's AI tutor and explained quizzes, and Syncorix's clinical AI that a pharmacist can question and overrule. They also build working products with AI-assisted coding.",
+    text: "Chimaobi designs AI products: Nuton's AI tutor and explained quizzes, and Syncorix Global's clinical AI that a pharmacist can question and overrule. They also build working products with AI-assisted coding.",
     sources: [S.nuton, S.sync],
   },
   {
@@ -55,7 +55,7 @@ export const ENTRIES = [
   },
   {
     keys: ["archive", "older project", "other project", "personal project", "concept"],
-    text: "The archive holds other case studies: client work (Mobihealth, Syncorix, Summit Bank), personal projects (FreelanceFlow, DiveHQ, Xplore, Foodshop), the Spaceikon website (designed and developed with Claude Code) and a concept redesign of Snapchat's settings.",
+    text: "The archive holds other case studies: client work (Mobihealth, Syncorix Global, Summit Bank), personal projects (FreelanceFlow, DiveHQ, Xplore, Foodshop), the Spaceikon website (designed and developed with Claude Code) and a concept redesign of Snapchat's settings.",
     sources: [S.arch],
   },
   {
@@ -187,7 +187,7 @@ export const GROUPS = [
     { label: "Years of experience", q: "How many years of experience do you have?" },
     { label: "Where you've worked", q: "Where have you worked?" },
     { label: "Mobihealth", q: "Tell me about Mobihealth" },
-    { label: "Syncorix", q: "Tell me about Syncorix" },
+    { label: "Syncorix Global", q: "Tell me about Syncorix Global" },
     { label: "21st Century", q: "What did you do at 21st Century Technologies?" },
     { label: "Education", q: "Where did you study?" },
   ] },
