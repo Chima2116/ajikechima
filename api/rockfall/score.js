@@ -2,7 +2,7 @@
 // The client never decides the score alone. The server checks the token, the clock, the arithmetic of the score,
 // and that the recorded pointer path looks like a real run. It cannot prove nobody scripted a perfect player,
 // but it stops casual forgery. To go further, re-simulate the run server-side from the seed and the inputs.
-import { configured, send, readJson, verifyToken, cleanName, ipHash, maxScoreFor, insertScore, countWhere, topScores, rankQuery } from './_lib.js';
+import { configured, send, readJson, verifyToken, cleanName, ipHash, ownerHash, nameTaken, maxScoreFor, insertScore, countWhere, topScores, rankQuery } from './_lib.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return send(res, 405, { error: 'method' });
@@ -36,7 +36,11 @@ export default async function handler(req, res) {
   try {
     const recent = await countWhere('ip_hash=eq.' + hash + '&created_at=gte.' + encodeURIComponent(new Date(Date.now() - 60000).toISOString()));
     if (recent >= 6) return send(res, 429, { error: 'slow_down' });
-    await insertScore({ run_id: tok.id, name, score, duration: Math.round(duration * 10) / 10, ip_hash: hash });
+    const owner = ownerHash(body.pid);
+    if (await nameTaken(name, owner, hash)) return send(res, 409, { error: 'name_taken' });
+    const row = { run_id: tok.id, name, score, duration: Math.round(duration * 10) / 10, ip_hash: hash };
+    try { await insertScore(owner ? Object.assign({ owner }, row) : row); }
+    catch (e) { if (owner && e.status === 400 && /owner/i.test(e.detail || '')) await insertScore(row); else throw e; }   // the owner column is optional until the SQL is run
   } catch (e) {
     if (e.status === 409 || /duplicate|unique/i.test(e.detail || '')) return send(res, 409, { error: 'already_submitted' });
     return send(res, 502, { error: 'store', hint: e.hint || 'unknown' });

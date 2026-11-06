@@ -8,6 +8,7 @@ create table if not exists public.rockfall_scores (
   score       integer     not null check (score between 1 and 100000),
   duration    real        not null check (duration > 0),
   ip_hash     text        not null,
+  owner       text,                                  -- salted hash of the browser's player id; keeps a name with the person who chose it
   created_at  timestamptz not null default now()
 );
 
@@ -17,3 +18,7 @@ create index if not exists rockfall_scores_ip_idx on public.rockfall_scores (ip_
 
 alter table public.rockfall_scores enable row level security;
 -- No policies = the anon and authenticated roles cannot touch the table. The API uses the service role.
+
+-- Already running the older table? Add the owner column (safe to run again):
+alter table public.rockfall_scores add column if not exists owner text;
+create index if not exists rockfall_scores_name_idx on public.rockfall_scores (lower(name));

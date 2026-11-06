@@ -38,6 +38,12 @@ export function verifyToken(token) {
   try { return JSON.parse(Buffer.from(body, 'base64url').toString('utf8')); } catch (e) { return null; }
 }
 
+// A browser keeps a random player id. The server stores only a salted hash of it as the owner of a name.
+export function ownerHash(pid) {
+  if (typeof pid !== 'string' || pid.length < 16 || pid.length > 80 || !/^[A-Za-z0-9_-]+$/.test(pid)) return null;
+  return crypto.createHash('sha256').update('owner|' + pid + '|' + process.env.ROCKFALL_SECRET).digest('hex').slice(0, 32);
+}
+
 export function ipHash(req) {
   const ip = String(req.headers['x-forwarded-for'] || req.socket?.remoteAddress || '').split(',')[0].trim();
   return crypto.createHash('sha256').update(ip + '|' + process.env.ROCKFALL_SECRET).digest('hex').slice(0, 32);
@@ -99,3 +105,17 @@ export function rankQuery(score, duration, sinceIso) {
   return 'score=gt.' + score + (sinceIso ? '&created_at=gte.' + encodeURIComponent(sinceIso) : '');
 }
 export const weekAgo = () => new Date(Date.now() - 7 * 86400000).toISOString();
+
+// Is this name already used by someone else? Case does not matter. A name belongs to the browser that first used it
+// (owner), or, for older entries without an owner, to the same network (ip_hash). Works before the "owner" column exists too.
+export async function nameTaken(name, owner, ip) {
+  const esc = encodeURIComponent(name.replace(/[\\%_]/g, '\\$&'));
+  let rows;
+  try { rows = await json(await sb(base() + '?select=owner,ip_hash&name=ilike.' + esc + '&limit=50', { headers: headers() })); }
+  catch (e) {
+    if (e.status === 400 && /owner/i.test(e.detail || '')) rows = await json(await sb(base() + '?select=ip_hash&name=ilike.' + esc + '&limit=50', { headers: headers() }));
+    else throw e;
+  }
+  if (!rows.length) return false;
+  return !rows.some((r) => (owner && r.owner === owner) || (!r.owner && r.ip_hash === ip));
+}
