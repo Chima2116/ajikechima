@@ -1741,3 +1741,13 @@ html.js-anim .cl-item { animation: cl-in 0.95s cubic-bezier(0.2, 0.8, 0.2, 1) bo
 /* project pages: the facts sit right under the title, then the hero image */
 .cs-section:has(> .pj-facts) { padding-block: 0 clamp(1.5rem, 3vw, 2rem); border-top: 0; }
 .cs-hero + .cs-section:has(> .pj-facts) { margin-top: -0.5rem; }
+
+/* links row in the facts list: icon, name, arrow. Plain links, no buttons. */
+.cs-links { display: flex; flex-wrap: wrap; gap: 0.5rem 1.75rem; }
+.cs-link { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--ink); font-size: 0.875rem; line-height: 1.4; text-decoration: none; padding-block: 0.1rem; border-bottom: 1px solid var(--guide); transition: border-color 0.25s, color 0.25s; }
+.cs-link__ic { flex: none; width: 1rem; height: 1rem; color: var(--muted); transition: color 0.25s; }
+.cs-link__go { flex: none; width: 0.85rem; height: 0.85rem; color: var(--muted); transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.25s; }
+.cs-link:hover, .cs-link:focus-visible { color: var(--accent); border-color: var(--accent); }
+.cs-link:hover .cs-link__ic, .cs-link:hover .cs-link__go, .cs-link:focus-visible .cs-link__ic, .cs-link:focus-visible .cs-link__go { color: var(--accent); }
+.cs-link:hover .cs-link__go { transform: translate(2px, -2px); }
+.cs-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 2px; }
