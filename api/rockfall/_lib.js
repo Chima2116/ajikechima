@@ -106,16 +106,16 @@ export function rankQuery(score, duration, sinceIso) {
 }
 export const weekAgo = () => new Date(Date.now() - 7 * 86400000).toISOString();
 
-// Is this name already used by someone else? Case does not matter. A name belongs to the browser that first used it
-// (owner), or, for older entries without an owner, to the same network (ip_hash). Works before the "owner" column exists too.
-export async function nameTaken(name, owner, ip) {
+// Is this name already used by someone else? Case does not matter. A name belongs only to the browser that first used it
+// (the "owner"). Entries saved before owners existed belong to nobody, so those names are simply taken.
+export async function nameTaken(name, owner) {
   const esc = encodeURIComponent(name.replace(/[\\%_]/g, '\\$&'));
   let rows;
-  try { rows = await json(await sb(base() + '?select=owner,ip_hash&name=ilike.' + esc + '&limit=50', { headers: headers() })); }
+  try { rows = await json(await sb(base() + '?select=owner&name=ilike.' + esc + '&limit=50', { headers: headers() })); }
   catch (e) {
-    if (e.status === 400 && /owner/i.test(e.detail || '')) rows = await json(await sb(base() + '?select=ip_hash&name=ilike.' + esc + '&limit=50', { headers: headers() }));
+    if (e.status === 400 && /owner/i.test(e.detail || '')) rows = await json(await sb(base() + '?select=name&name=ilike.' + esc + '&limit=50', { headers: headers() }));   // owner column not added yet: every existing name counts as taken
     else throw e;
   }
   if (!rows.length) return false;
-  return !rows.some((r) => (owner && r.owner === owner) || (!r.owner && r.ip_hash === ip));
+  return !rows.every((r) => owner && r.owner === owner);
 }
