@@ -460,8 +460,8 @@
     function overlayReady() {
       setBoardMode(false); overlay.hidden = false; overlay.className = 'rf__overlay is-title';
       var tilt = [-3, 2, -2, 3, -2, 2, -3, 2], lift = [2, -2, 3, -3, 2, -2, 3, -1];   // each letter sits a little off, like rocks that just landed
-      var letters = 'ROCKFALL'.split('').map(function (c, i) { return '<span style="--i:' + i + ';--r:' + ((i % 2 ? 1 : -1) * (6 + i * 2)) + ';--t:' + tilt[i] + ';--y:' + lift[i] + '" aria-hidden="true">' + c + '</span>'; }).join('');
-      overlay.innerHTML = '<div class="rf__titlescreen"><p class="rf__logo" aria-label="ROCKFALL">' + letters + '</p>' +
+      var letters = 'ROCKFALL'.split('').map(function (c, i) { return '<b style="--i:' + i + ';--r:' + ((i % 2 ? 1 : -1) * (6 + i * 2)) + ';--t:' + tilt[i] + ';--y:' + lift[i] + '">' + c + '</b>'; }).join('');
+      overlay.innerHTML = '<div class="rf__titlescreen"><p class="rf__logo"><span class="sr-only">ROCKFALL</span><span class="rf__letters" aria-hidden="true">' + letters + '</span></p>' +
         '<p class="rf__headline">One character. Endless falling rocks. How long can you survive?</p>' +
         '<div class="rf__startgroup"><button type="button" class="rf__play" data-rf-start><span>Let\'s play</span><i aria-hidden="true">&rarr;</i></button>' +
         '<p class="rf__controls">' + (coarse ? 'Drag your finger' : 'Move with your cursor') + ' &middot; Dodge everything</p></div>' +

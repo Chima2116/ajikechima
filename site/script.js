@@ -514,9 +514,10 @@
 
   if (window.Lenis && !calm) {
     lenis = new Lenis({
-      duration: 1.15,
+      duration: 1.25,
       easing: function (t) { return Math.min(1, 1.001 - Math.pow(2, -10 * t)); },
-      smoothWheel: true
+      smoothWheel: true,
+      wheelMultiplier: 0.95
     });
     window.siteLenis = lenis;
     var frame = function (t) { lenis.raf(t); requestAnimationFrame(frame); };
@@ -534,8 +535,13 @@
     var el = id === 'top' ? null : document.getElementById(id);
     if (id !== 'top' && !el) return;
     e.preventDefault();
-    if (lenis) lenis.scrollTo(el || 0, { offset: el ? -8 : 0, duration: 1.4 });
-    else window.scrollTo({ top: el ? el.getBoundingClientRect().top + window.scrollY - 8 : 0, behavior: calm ? 'auto' : 'smooth' });
+    var gap = window.innerWidth < 900 ? -64 : -8;   // keep the heading clear of the phone's top bar
+    if (lenis) {
+      // longer trips take longer, and they ease in as well as out, so a jump across the page never starts like a teleport
+      var dist = Math.abs((el ? el.getBoundingClientRect().top + window.scrollY + gap : 0) - window.scrollY);
+      lenis.scrollTo(el || 0, { offset: el ? gap : 0, duration: Math.min(2.6, Math.max(0.9, 0.7 + dist / 5200)), easing: function (t) { return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; } });
+    }
+    else window.scrollTo({ top: el ? el.getBoundingClientRect().top + window.scrollY + gap : 0, behavior: calm ? 'auto' : 'smooth' });
     try { history.pushState(null, '', u.hash); } catch (err) {}
   });
 
@@ -993,6 +999,7 @@
   function open() {
     if (busy || isOpen) return;
     place(); load(); busy = true; isOpen = true; veil(true);
+    if (isSheet) { document.documentElement.classList.add('ask-open'); if (window.siteLenis) window.siteLenis.stop(); }
     pill.innerHTML = fab.innerHTML;
     var from = fabBox();
     panel.hidden = false;
@@ -1010,6 +1017,7 @@
   function close() {
     if (busy || !isOpen) return;
     busy = true; isOpen = false; veil(false);
+    document.documentElement.classList.remove('ask-open'); if (window.siteLenis) window.siteLenis.start();
     fab.setAttribute('aria-expanded', 'false');
     if (window.siteSound) window.siteSound('close');
     var done = function () { clean(); panel.hidden = true; busy = false; fab.focus({ preventScroll: true }); };
@@ -1127,4 +1135,28 @@
   new IntersectionObserver(function (es, io) {
     if (es[0].isIntersecting) { box.classList.add('is-lit'); io.disconnect(); }
   }, { threshold: 0.2 }).observe(box);
+})();
+
+/* Page-to-page transitions: if the browser skips one (a fast second click, a background tab), swallow the promise so nothing is reported */
+window.addEventListener('pagereveal', function (e) {
+  var vt = e.viewTransition; if (!vt) return;
+  ['ready', 'finished', 'updateCallbackDone'].forEach(function (k) { if (vt[k] && vt[k].catch) vt[k].catch(function () {}); });
+});
+window.addEventListener('pageswap', function (e) {
+  var vt = e.viewTransition; if (!vt) return;
+  ['ready', 'finished', 'updateCallbackDone'].forEach(function (k) { if (vt[k] && vt[k].catch) vt[k].catch(function () {}); });
+});
+
+/* Lazy images fade in when they finish loading instead of popping into place */
+(function () {
+  var root = document.documentElement;
+  if (!root.classList.contains('js-anim')) return;
+  function done(img) { img.classList.add('is-loaded'); }
+  document.querySelectorAll('img[loading="lazy"]').forEach(function (img) {
+    if (img.complete && img.naturalWidth) { img.classList.add('is-loaded'); return; }
+    img.addEventListener('load', function () { done(img); }, { once: true });
+    img.addEventListener('error', function () { done(img); }, { once: true });
+  });
+  // never leave a picture hidden if the load event is missed
+  setTimeout(function () { document.querySelectorAll('img[loading="lazy"]:not(.is-loaded)').forEach(done); }, 6000);
 })();
