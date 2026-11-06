@@ -80,11 +80,11 @@
     <figure class="nu-reel" data-nu-reel aria-label="A tour of the redesigned Nuton learner app">
       <div class="pj-bar"><span class="pj-dots"><i></i><i></i><i></i></span><span class="pj-url">nuton.app</span></div>
       <div class="nu-reel__stage">
-        <img class="is-on" src="../assets/nuton/cs/onboarding.webp" width="1600" height="860" alt="Onboarding asks how you prefer to understand new ideas, with a live preview of the Story-Based style">
-        <img src="../assets/nuton/cs/start.webp" width="1600" height="858" alt="Start New with two PDFs added and a Start Structured Learning button" loading="lazy">
+        <img class="is-on" src="../assets/nuton/cs/onboarding.webp" width="1600" height="1000" alt="Onboarding asks how you prefer to understand new ideas, with a live preview of the Story-Based style">
+        <img src="../assets/nuton/cs/start.webp" width="1600" height="1000" alt="Start New with two PDFs added and a Start Structured Learning button" loading="lazy">
         <img src="../assets/nuton/cs/lesson.webp" width="1600" height="1000" alt="A lesson with its contents on the left and Nuri, the AI tutor, on the right" loading="lazy">
-        <img src="../assets/nuton/cs/quiz.webp" width="1200" height="1013" alt="A quiz question answered correctly, with Nuri and an explanation" loading="lazy">
-        <img src="../assets/nuton/cs/streak.webp" width="1600" height="1220" alt="The streak screen with a weekly tracker and milestones" loading="lazy">
+        <img src="../assets/nuton/cs/quiz.webp" width="1600" height="1000" alt="A quiz question answered correctly, with Nuri and an explanation" loading="lazy">
+        <img src="../assets/nuton/cs/fit-streak.webp" width="1600" height="1000" alt="The streak screen with a weekly tracker and milestones" loading="lazy">
       </div>
       <div class="nu-reel__steps" role="group" aria-label="Jump to a step">
         <button type="button" aria-pressed="true"><span>Choose how you learn</span><i></i></button>
@@ -119,21 +119,26 @@
       <h2 class="section__title cs-section__label" id="before-title">Where it started</h2>
       <div class="cs-section__body cs-body">
         <p class="nu-say">The first version stopped at the summary.</p>
-        <p class="nu-long">I designed that first version too. You uploaded a document or pasted a link, and Nuton returned a summary, a chat, flashcards and a quiz, all in tabs that looked the same. There was no path through them, no tutor that knew where you were, and nothing to bring you back the next day. Drag the handle to compare it with the redesign.</p>
+        <p class="nu-long">I designed that first version too. You uploaded a document or pasted a link, and Nuton returned a summary, a chat, flashcards and a quiz, all in tabs that looked the same. There was no path through them, no tutor that knew where you were, and nothing to bring you back the next day. Flip between the two to compare.</p>
         <div class="nu-cmp" data-nu-cmp>
-          <div class="nu-cmp__tabs" role="group" aria-label="Choose a screen to compare">
-            <button type="button" aria-pressed="true" data-before="../assets/nuton/cs/cmp-old-start.webp" data-after="../assets/nuton/cs/cmp-start.webp">Start</button>
-            <button type="button" aria-pressed="false" data-before="../assets/nuton/cs/cmp-old-lesson.webp" data-after="../assets/nuton/cs/cmp-lesson.webp">Lesson</button>
-            <button type="button" aria-pressed="false" data-before="../assets/nuton/cs/cmp-old-library.webp" data-after="../assets/nuton/cs/cmp-library.webp">Library</button>
+          <div class="nu-cmp__ctl">
+            <div class="nu-seg" role="tablist" aria-label="Choose a screen">
+              <button type="button" role="tab" aria-selected="true" data-before="../assets/nuton/cs/cmp-old-start.webp" data-after="../assets/nuton/cs/cmp-start.webp">Start</button>
+              <button type="button" role="tab" aria-selected="false" data-before="../assets/nuton/cs/cmp-old-lesson.webp" data-after="../assets/nuton/cs/cmp-lesson.webp">Lesson</button>
+              <button type="button" role="tab" aria-selected="false" data-before="../assets/nuton/cs/cmp-old-library.webp" data-after="../assets/nuton/cs/cmp-library.webp">Library</button>
+            </div>
+            <div class="nu-seg nu-seg--accent" role="group" aria-label="Version">
+              <button type="button" data-ver="old" aria-pressed="true">First version</button>
+              <button type="button" data-ver="new" aria-pressed="false">Redesign</button>
+            </div>
           </div>
-          <div class="nu-cmp__frame" style="--x:50%">
-            <img class="nu-cmp__after" src="../assets/nuton/cs/cmp-start.webp" alt="Redesign" width="1600" height="1000" loading="lazy">
-            <img class="nu-cmp__before" src="../assets/nuton/cs/cmp-old-start.webp" alt="First version" width="1600" height="1000" loading="lazy">
-            <span class="nu-cmp__tag nu-cmp__tag--l">First version</span>
-            <span class="nu-cmp__tag nu-cmp__tag--r">Redesign</span>
-            <span class="nu-cmp__bar" aria-hidden="true"><i></i></span>
-            <input class="nu-cmp__range" type="range" min="0" max="100" value="50" aria-label="Move the divider between the first version and the redesign">
-          </div>
+          <figure class="nu-win">
+            <div class="pj-bar"><span class="pj-dots"><i></i><i></i><i></i></span><span class="pj-url" data-nu-ver>First version</span></div>
+            <div class="nu-win__stack">
+              <img class="nu-cmp__new" src="../assets/nuton/cs/cmp-start.webp" alt="Redesigned screen" width="1600" height="1000" loading="lazy">
+              <img class="nu-cmp__old" src="../assets/nuton/cs/cmp-old-start.webp" alt="First version screen" width="1600" height="1000" loading="lazy">
+            </div>
+          </figure>
         </div>
       </div>
     </div>
@@ -177,7 +182,11 @@
           </div>
         </div>
         <p class="nu-cap">The previews are Nuton's own copy from the onboarding screen.</p>
-        <figure class="cs-media cs-shot"><img src="../assets/nuton/cs/onboard-tutor.webp" width="1600" height="1000" loading="lazy" alt="The second onboarding question, What kind of tutor works best for you, with The Professor, The Coach, Study Buddy and The Socratic Guide, and a preview in The Professor's tone"><figcaption>The second question picks the tutor's tone: The Professor, The Coach, Study Buddy or The Socratic Guide.</figcaption></figure>
+        <figure class="nu-win nu-win--solo">
+          <div class="pj-bar"><span class="pj-dots"><i></i><i></i><i></i></span><span class="pj-url">nuton.app/onboarding</span></div>
+          <img src="../assets/nuton/cs/onboard-tutor.webp" width="1600" height="1000" loading="lazy" alt="The second onboarding question, What kind of tutor works best for you, with The Professor, The Coach, Study Buddy and The Socratic Guide, and a preview in The Professor's tone">
+        </figure>
+        <p class="nu-cap">The second question picks the tutor's tone: The Professor, The Coach, Study Buddy or The Socratic Guide.</p>
       </div>
     </div>
   </section>
@@ -189,20 +198,12 @@
         <p class="nu-say">Some students arrive with a pile of slides. Some arrive with a topic and nothing else.</p>
         <p class="nu-long">The old start screen put uploading front and centre. The new Start screen splits the first choice in two, "My study materials" or "Learn something new", and adds a Research mode that asks a couple of questions, searches the web and writes a report with its sources.</p>
         <div class="nu-tabs" data-nu-tabs>
-          <div class="nu-seg" role="tablist" aria-label="Ways to start">
-            <button type="button" role="tab" aria-selected="true" data-src="../assets/nuton/cs/start.webp" data-cap="My study materials: add PDFs, slides, videos or audio, more than one at a time, then start structured learning.">My study materials</button>
-            <button type="button" role="tab" aria-selected="false" data-src="../assets/nuton/cs/new-topic.webp" data-cap="Learn something new: type a topic and Nuton builds the course from scratch.">Learn something new</button>
-            <button type="button" role="tab" aria-selected="false" data-src="../assets/nuton/cs/new-research.webp" data-cap="Research: ask for a report, answer two quick questions, and get a cited write-up.">Research</button>
-          </div>
+          <div class="nu-seg nu-seg--scroll" role="tablist" aria-label="Ways to start"><button type="button" role="tab" aria-selected="true" data-src="../assets/nuton/cs/start.webp" data-url="nuton.app/new" data-cap="Add PDFs, slides, videos or audio, more than one at a time, then start structured learning.">My study materials</button><button type="button" role="tab" aria-selected="false" data-src="../assets/nuton/cs/new-topic.webp" data-url="nuton.app/new" data-cap="Type a topic and Nuton builds the course from scratch.">Learn something new</button><button type="button" role="tab" aria-selected="false" data-src="../assets/nuton/cs/research-q.webp" data-url="nuton.app/research" data-cap="Research asks before it searches, so the report is about what you meant.">Research</button><button type="button" role="tab" aria-selected="false" data-src="../assets/nuton/cs/research-report.webp" data-url="nuton.app/research" data-cap="The report opens beside the conversation, where you can select a passage and ask for changes.">The report</button></div>
           <figure class="nu-win">
-            <div class="pj-bar"><span class="pj-dots"><i></i><i></i><i></i></span><span class="pj-url">nuton.app/new</span></div>
-            <img src="../assets/nuton/cs/start.webp" width="1600" height="858" alt="" loading="lazy" data-nu-img>
+            <div class="pj-bar"><span class="pj-dots"><i></i><i></i><i></i></span><span class="pj-url" data-nu-url>nuton.app/new</span></div>
+            <img src="../assets/nuton/cs/start.webp" width="1600" height="1000" alt="" loading="lazy" data-nu-img>
           </figure>
-          <p class="nu-cap" data-nu-cap aria-live="polite">My study materials: add PDFs, slides, videos or audio, more than one at a time, then start structured learning.</p>
-        </div>
-        <div class="cs-pair">
-          <figure class="cs-media cs-shot"><img src="../assets/nuton/cs/research-q.webp" width="1600" height="1000" loading="lazy" alt="Research mode asking which angle of machine learning the report should centre on, with options to pick"><figcaption>Research asks before it searches, so the report is about what you meant.</figcaption></figure>
-          <figure class="cs-media cs-shot"><img src="../assets/nuton/cs/research-report.webp" width="1600" height="1000" loading="lazy" alt="A finished research report on machine learning open in a side pane next to the conversation"><figcaption>The report opens beside the conversation, where you can select a passage and ask for changes.</figcaption></figure>
+          <p class="nu-cap" data-nu-cap aria-live="polite">Add PDFs, slides, videos or audio, more than one at a time, then start structured learning.</p>
         </div>
       </div>
     </div>
@@ -215,19 +216,12 @@
         <p class="nu-say">One course, many ways to study it.</p>
         <p class="nu-long">A course is split into sections you work through in order, with the contents on the left and Nuri on the right. Highlight any passage and you can ask Nuri about it, simplify it, or save it to your notes. When it's time to revise, the same material becomes a study guide, flashcards or a podcast you can listen to on the way to class.</p>
         <div class="nu-tabs" data-nu-tabs>
-          <div class="nu-seg nu-seg--scroll" role="tablist" aria-label="Study tools">
-            <button type="button" role="tab" aria-selected="true" data-src="../assets/nuton/cs/lesson.webp" data-cap="The lesson: sections in order, contents on the left, Nuri on the right.">Lesson</button>
-            <button type="button" role="tab" aria-selected="false" data-src="../assets/nuton/cs/asknuri-select.webp" data-cap="Select any passage to explain it, simplify it, give an example, or ask Nuri something about it.">Ask about a passage</button>
-            <button type="button" role="tab" aria-selected="false" data-src="../assets/nuton/cs/study-guide.webp" data-cap="The study guide pulls the core concepts of every section onto one page.">Study guide</button>
-            <button type="button" role="tab" aria-selected="false" data-src="../assets/nuton/cs/flashcards.webp" data-cap="Flashcards flip from question to answer, one card at a time.">Flashcards</button>
-            <button type="button" role="tab" aria-selected="false" data-src="../assets/nuton/cs/podcast.webp" data-cap="Every section also becomes a short podcast episode.">Podcast</button>
-            <button type="button" role="tab" aria-selected="false" data-src="../assets/nuton/cs/notes.webp" data-cap="Notes is a block editor: checklists, tables, code and callouts.">Notes</button>
-          </div>
+          <div class="nu-seg nu-seg--scroll" role="tablist" aria-label="Study tools"><button type="button" role="tab" aria-selected="true" data-src="../assets/nuton/cs/lesson.webp" data-url="nuton.app/lesson" data-cap="Sections in order, contents on the left, Nuri on the right.">Lesson</button><button type="button" role="tab" aria-selected="false" data-src="../assets/nuton/cs/asknuri-select.webp" data-url="nuton.app/lesson" data-cap="Select any passage to explain it, simplify it, give an example, or ask Nuri about it.">Ask about a passage</button><button type="button" role="tab" aria-selected="false" data-src="../assets/nuton/cs/study-guide.webp" data-url="nuton.app/study-guide" data-cap="The core concepts of every section on one page.">Study guide</button><button type="button" role="tab" aria-selected="false" data-src="../assets/nuton/cs/flashcards.webp" data-url="nuton.app/flashcards" data-cap="Cards flip from question to answer, one at a time.">Flashcards</button><button type="button" role="tab" aria-selected="false" data-src="../assets/nuton/cs/podcast.webp" data-url="nuton.app/lesson" data-cap="Every section also becomes a short podcast episode.">Podcast</button><button type="button" role="tab" aria-selected="false" data-src="../assets/nuton/cs/notes.webp" data-url="nuton.app/lesson" data-cap="A block editor for your own notes: checklists, tables, code and callouts.">Notes</button></div>
           <figure class="nu-win">
-            <div class="pj-bar"><span class="pj-dots"><i></i><i></i><i></i></span><span class="pj-url">nuton.app/lesson</span></div>
+            <div class="pj-bar"><span class="pj-dots"><i></i><i></i><i></i></span><span class="pj-url" data-nu-url>nuton.app/lesson</span></div>
             <img src="../assets/nuton/cs/lesson.webp" width="1600" height="1000" alt="" loading="lazy" data-nu-img>
           </figure>
-          <p class="nu-cap" data-nu-cap aria-live="polite">The lesson: sections in order, contents on the left, Nuri on the right.</p>
+          <p class="nu-cap" data-nu-cap aria-live="polite">Sections in order, contents on the left, Nuri on the right.</p>
         </div>
       </div>
     </div>
@@ -305,9 +299,13 @@
           <h3 class="cs-decision__title nu-sub">A final exam that shows what to firm up</h3>
           <p>Each course ends with a final exam in a size you choose, mixing multiple choice, fill in the gap, theory and scenario questions. Results break down by question type, and the review lets you filter to just the answers that need another look.</p>
         </div>
-        <div class="cs-pair">
-          <figure class="cs-media cs-shot"><img src="../assets/nuton/cs/exam-results.webp" width="1600" height="857" loading="lazy" alt="Final exam results: 70 percent, 21 of 30 points, with a breakdown by question type"><figcaption>Results, broken down by question type.</figcaption></figure>
-          <figure class="cs-media cs-shot"><img src="../assets/nuton/cs/exam-review.webp" width="1600" height="857" loading="lazy" alt="Reviewing exam answers, with Nuri explaining why an answer is right"><figcaption>The review: every answer explained.</figcaption></figure>
+        <div class="nu-tabs" data-nu-tabs>
+          <div class="nu-seg" role="tablist" aria-label="Exam screens"><button type="button" role="tab" aria-selected="true" data-src="../assets/nuton/cs/exam-results.webp" data-url="nuton.app/exam" data-cap="Results are broken down by question type.">Results</button><button type="button" role="tab" aria-selected="false" data-src="../assets/nuton/cs/exam-review.webp" data-url="nuton.app/exam" data-cap="The review: every answer explained, filterable to what needs another look.">Review</button></div>
+          <figure class="nu-win">
+            <div class="pj-bar"><span class="pj-dots"><i></i><i></i><i></i></span><span class="pj-url" data-nu-url>nuton.app/exam</span></div>
+            <img src="../assets/nuton/cs/exam-results.webp" width="1600" height="1000" alt="" loading="lazy" data-nu-img>
+          </figure>
+          <p class="nu-cap" data-nu-cap aria-live="polite">Results are broken down by question type.</p>
         </div>
       </div>
     </div>
@@ -342,9 +340,13 @@
           </div>
         </div>
         <p class="nu-cap">A simplified version of the streak screen, to show how it behaves.</p>
-        <div class="cs-pair nu-pair--game">
-          <figure class="cs-media cs-shot"><img src="../assets/nuton/cs/streak.webp" width="1600" height="1220" loading="lazy" alt="The streak screen: a one-day streak, the week, best streak, learning days, and milestones from 3 to 100 days"><figcaption>The streak screen, with the next milestone always in view.</figcaption></figure>
-          <figure class="cs-media cs-shot"><img src="../assets/nuton/cs/achievements.webp" width="1200" height="1466" loading="lazy" alt="Achievements grouped into Consistency, Progress and Mastery, with two of thirteen earned"><figcaption>Thirteen badges across consistency, progress and mastery.</figcaption></figure>
+        <div class="nu-tabs" data-nu-tabs>
+          <div class="nu-seg" role="tablist" aria-label="Gamification screens"><button type="button" role="tab" aria-selected="true" data-src="../assets/nuton/cs/fit-streak.webp" data-url="nuton.app/streak" data-cap="The streak screen, with the next milestone always in view.">Streak</button><button type="button" role="tab" aria-selected="false" data-src="../assets/nuton/cs/fit-achievements.webp" data-url="nuton.app/achievements" data-cap="Thirteen badges across consistency, progress and mastery.">Achievements</button></div>
+          <figure class="nu-win">
+            <div class="pj-bar"><span class="pj-dots"><i></i><i></i><i></i></span><span class="pj-url" data-nu-url>nuton.app/streak</span></div>
+            <img src="../assets/nuton/cs/fit-streak.webp" width="1600" height="1000" alt="" loading="lazy" data-nu-img>
+          </figure>
+          <p class="nu-cap" data-nu-cap aria-live="polite">The streak screen, with the next milestone always in view.</p>
         </div>
       </div>
     </div>
@@ -356,9 +358,13 @@
       <div class="cs-section__body cs-body">
         <p class="nu-say">A semester of courses needs somewhere to live.</p>
         <p class="nu-long">The Library holds every lesson, in a list or a grid, with what's shared with you on its own tab. Spaces group lessons by subject, like a folder per class, and a space can have its own final exam pooled from every lesson inside it.</p>
-        <div class="cs-pair">
-          <figure class="cs-media cs-shot"><img src="../assets/nuton/cs/library.webp" width="1600" height="860" loading="lazy" alt="The Library: My Lessons and Shared with me, with a search field and lessons tagged by space"><figcaption>Library</figcaption></figure>
-          <figure class="cs-media cs-shot"><img src="../assets/nuton/cs/spaces.webp" width="1600" height="858" loading="lazy" alt="Spaces: UI/UX Design, Web Development, Graphic Design and COSC 101"><figcaption>Spaces</figcaption></figure>
+        <div class="nu-tabs" data-nu-tabs>
+          <div class="nu-seg" role="tablist" aria-label="Organise screens"><button type="button" role="tab" aria-selected="true" data-src="../assets/nuton/cs/library.webp" data-url="nuton.app/library" data-cap="My Lessons and Shared with me, in a list or a grid.">Library</button><button type="button" role="tab" aria-selected="false" data-src="../assets/nuton/cs/spaces.webp" data-url="nuton.app/spaces" data-cap="Spaces group lessons by subject, like a folder per class.">Spaces</button></div>
+          <figure class="nu-win">
+            <div class="pj-bar"><span class="pj-dots"><i></i><i></i><i></i></span><span class="pj-url" data-nu-url>nuton.app/library</span></div>
+            <img src="../assets/nuton/cs/library.webp" width="1600" height="1000" alt="" loading="lazy" data-nu-img>
+          </figure>
+          <p class="nu-cap" data-nu-cap aria-live="polite">My Lessons and Shared with me, in a list or a grid.</p>
         </div>
       </div>
     </div>
@@ -384,7 +390,7 @@
       <h2 class="section__title cs-section__label" id="sys-title">Built, not just drawn</h2>
       <div class="cs-section__body cs-body">
         <p class="nu-say">I didn't stop at the Figma file. I built the system the app is made from.</p>
-        <p class="nu-long">With Claude, I turned the redesign into Nuton's design system in code and a connected prototype of the learner app. Every colour, size and shadow is a token generated from the Figma file, components are accessible by default, and the prototype joins the designed pages into one app you can click through, from signing in to taking a final exam. Each page is drawn in its loading, empty and error states, not just the happy path. The aim: engineering builds from real components, not a stack of static screens.</p>
+        <p class="nu-long">With Claude, I turned the redesign into Nuton's design system in code, plus a connected prototype of the learner app that runs from sign-in to final exam. Every colour, size and shadow is a token generated from the Figma file, components are accessible by default, and each page is drawn in its loading, empty and error states too. The aim: engineering builds from real components, not a stack of static screens.</p>
         <ul class="cs-stats">
           <li><strong>15</strong><span>learner pages designed</span></li>
           <li><strong>50+</strong><span>components</span></li>

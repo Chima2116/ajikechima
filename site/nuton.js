@@ -49,29 +49,31 @@
     show(0);
   }
 
-  // Before and after slider
+  // Before and after: pick a screen, flip between the first version and the redesign
   page.querySelectorAll('[data-nu-cmp]').forEach(function (c) {
-    var frame = c.querySelector('.nu-cmp__frame'), range = c.querySelector('.nu-cmp__range');
-    var before = c.querySelector('.nu-cmp__before'), after = c.querySelector('.nu-cmp__after');
-    range.addEventListener('input', function () { frame.style.setProperty('--x', range.value + '%'); });
-    c.querySelectorAll('.nu-cmp__tabs button').forEach(function (b) {
+    var oldI = c.querySelector('.nu-cmp__old'), newI = c.querySelector('.nu-cmp__new'), lab = c.querySelector('[data-nu-ver]');
+    var screens = c.querySelectorAll('[role="tab"]'), vers = c.querySelectorAll('[data-ver]');
+    var setV = function (v) {
+      c.classList.toggle('is-new', v === 'new');
+      vers.forEach(function (x) { x.setAttribute('aria-pressed', x.getAttribute('data-ver') === v ? 'true' : 'false'); });
+      lab.textContent = v === 'new' ? 'Redesign' : 'First version';
+    };
+    vers.forEach(function (x) { x.addEventListener('click', function () { setV(x.getAttribute('data-ver')); sfx('tap'); }); });
+    screens.forEach(function (b, k) {
+      b.tabIndex = k ? -1 : 0;
       b.addEventListener('click', function () {
-        c.querySelectorAll('.nu-cmp__tabs button').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
-        before.src = b.getAttribute('data-before'); after.src = b.getAttribute('data-after'); sfx('tap');
+        screens.forEach(function (x) { var on = x === b; x.setAttribute('aria-selected', on ? 'true' : 'false'); x.tabIndex = on ? 0 : -1; });
+        oldI.src = b.getAttribute('data-before'); newI.src = b.getAttribute('data-after'); sfx('tap');
+      });
+      b.addEventListener('keydown', function (e) {
+        var d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+        if (d) { e.preventDefault(); var n = screens[(k + d + screens.length) % screens.length]; n.focus(); n.click(); }
       });
     });
-    // a small nudge the first time it scrolls into view, so it reads as draggable
+    // once it scrolls into view, show the redesign so the change reads as the point
     if (!calm) {
-      var nudged = false;
-      onView(frame, function (v) {
-        if (!v || nudged) return; nudged = true;
-        var t = 0, start = performance.now();
-        (function step(now) {
-          t = (now - start) / 1400; if (t > 1 || range.matches(':active')) { frame.style.setProperty('--x', range.value + '%'); return; }
-          var x = 50 + Math.sin(t * Math.PI * 2) * 14 * (1 - t);
-          frame.style.setProperty('--x', x.toFixed(2) + '%'); requestAnimationFrame(step);
-        })(start);
-      });
+      var shown = false;
+      onView(c, function (v) { if (v && !shown) { shown = true; setTimeout(function () { if (!c.classList.contains('is-new')) setV('new'); }, 900); } });
     }
   });
 
@@ -112,6 +114,7 @@
     var sel = function (b, focus) {
       tabs.forEach(function (x) { var on = x === b; x.setAttribute('aria-selected', on ? 'true' : 'false'); x.tabIndex = on ? 0 : -1; });
       cap.textContent = b.getAttribute('data-cap'); img.alt = b.getAttribute('data-cap');
+      var u = w.querySelector('[data-nu-url]'); if (u && b.getAttribute('data-url')) u.textContent = b.getAttribute('data-url');
       var src = b.getAttribute('data-src');
       if (img.getAttribute('src') !== src) {
         img.classList.add('is-swap');
