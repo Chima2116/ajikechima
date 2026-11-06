@@ -1456,15 +1456,6 @@ html.js-anim .cl-item { animation: cl-in 0.95s cubic-bezier(0.2, 0.8, 0.2, 1) bo
 .nu-cmp { margin-top: 1.5rem; }
 
 /* loop */
-.cs-body .nu-loop { list-style: none; margin: 1.5rem 0 0; padding: 0; max-width: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr)); gap: 0.5rem; counter-reset: nu; }
-.nu-loop li { counter-increment: nu; position: relative; display: grid; gap: 0.15rem; margin: 0; padding: 0.9rem 1rem 1rem; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); transition: border-color 0.4s, background-color 0.4s; }
-.cs-body .nu-loop li + li { margin-top: 0; }
-.nu-loop li::before { content: counter(nu, decimal-leading-zero); font: 0.625rem/1 var(--font-mono); color: var(--muted); margin-bottom: 0.5rem; }
-.nu-loop b { font-weight: 500; font-size: 0.9375rem; transition: color 0.4s; }
-.nu-loop span { font-size: 0.8125rem; line-height: 1.4; color: var(--muted); }
-.nu-loop li.is-on { border-color: var(--nu); background: color-mix(in srgb, var(--nu) 7%, var(--panel)); }
-.nu-loop li.is-on b { color: var(--nu); }
-@media (min-width: 900px) { .cs-body .nu-loop { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
 
 /* cards: interactive widgets share padding, radius and surface */
 .nu-style, .nu-nuri, .nu-quiz, .nu-streak, .nu-phones { margin-top: 1.5rem; padding: var(--nu-pad); border: 1px solid var(--line); border-radius: var(--nu-r); background: var(--panel); }
@@ -1586,3 +1577,37 @@ html.js-anim .cl-item { animation: cl-in 0.95s cubic-bezier(0.2, 0.8, 0.2, 1) bo
 .nu-page .cs-body p.cs-stats__note { margin-top: 0.75rem; max-width: none; font-size: 0.8125rem; line-height: 1.5; color: var(--muted); }
 .nu-page .cs-body ul.cs-stats + p { margin-top: 1.25rem; }
 .nu-page .cs-body .pj-cta { margin-top: 1.75rem; }
+
+/* the learning loop: a ring with Nuri in the middle, the real screen beside it */
+.nu-loop { display: grid; grid-template-columns: minmax(0, 1fr); gap: clamp(1.25rem, 3vw, 2rem); align-items: center; margin-top: 1.5rem; padding: var(--nu-pad); border: 1px solid var(--line); border-radius: var(--nu-r); background: var(--panel); }
+@media (min-width: 820px) { .nu-loop { grid-template-columns: minmax(0, 22rem) minmax(0, 1fr); } }
+.nu-ring { position: relative; width: 100%; max-width: 22rem; aspect-ratio: 1; margin-inline: auto; }
+.nu-ring svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
+.nu-ring__track { fill: none; stroke: var(--line); stroke-width: 2; stroke-dasharray: 3 7; }
+.nu-ring__arc { fill: none; stroke: var(--nu); stroke-width: 3; stroke-linecap: round; stroke-dasharray: 804.2; stroke-dashoffset: 804.2; transition: stroke-dashoffset 0.9s cubic-bezier(0.22, 1, 0.36, 1); }
+.nu-ring__nuri { position: absolute; left: 50%; top: 50%; width: 31%; height: auto; transform: translate(-50%, -52%); transform-origin: 50% 100%; filter: drop-shadow(0 10px 18px rgb(33 89 235 / 0.25)); }
+.nu-ring__nuri.is-in { animation: nu-pop-c 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+@keyframes nu-pop-c { 0% { transform: translate(-50%, -52%) scale(0.86); opacity: 0.4; } 100% { transform: translate(-50%, -52%); opacity: 1; } }
+.nu-ring__node { position: absolute; left: var(--x); top: var(--y); transform: translate(-50%, -50%); display: grid; justify-items: center; gap: 0.15rem; min-width: 5.4rem; padding: 0.5rem 0.7rem 0.55rem; border: 1px solid var(--line); border-radius: 12px; background: var(--bg); color: var(--muted); font: inherit; cursor: pointer; transition: border-color 0.3s, color 0.3s, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s; }
+.nu-ring__node i { font: normal 0.625rem/1 var(--font-mono); }
+.nu-ring__node span { font-size: 0.8125rem; line-height: 1.2; }
+.nu-ring__node:hover { color: var(--ink); border-color: var(--guide); }
+.nu-ring__node[aria-pressed="true"] { transform: translate(-50%, -50%) scale(1.08); border-color: var(--nu); color: var(--ink); box-shadow: 0 0 0 4px color-mix(in srgb, var(--nu) 16%, transparent); }
+.nu-ring__node[aria-pressed="true"] i { color: var(--nu); }
+.nu-ring__node:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.nu-loop__side { display: grid; gap: 1.1rem; min-width: 0; }
+.nu-loop__panes { display: grid; }
+.nu-loop__pane { grid-area: 1 / 1; opacity: 0; transform: translateY(6px); transition: opacity 0.35s ease, transform 0.45s cubic-bezier(0.22, 1, 0.36, 1); pointer-events: none; }
+.nu-loop__pane.is-on { opacity: 1; transform: none; pointer-events: auto; }
+.cs-body .nu-loop__k { max-width: none; font: 0.6875rem/1.2 var(--font-mono); color: var(--muted); }
+.cs-body .nu-loop__h { max-width: none; margin-top: 0.5rem; font-size: clamp(1.15rem, 1.8vw, 1.35rem); font-weight: 500; line-height: 1.25; letter-spacing: -0.015em; }
+.cs-body .nu-loop__t { max-width: 30rem; margin-top: 0.5rem; font-size: 0.9375rem; line-height: 1.6; color: var(--muted); }
+.nu-win--mini { margin: 0; }
+.nu-win--mini .pj-bar { height: 1.9rem; }
+.nu-win--mini .nu-win__stack img { opacity: 0; transition: opacity 0.5s ease, transform 0.8s cubic-bezier(0.22, 1, 0.36, 1); transform: scale(1.03); }
+.nu-win--mini .nu-win__stack img.is-on { opacity: 1; transform: none; }
+@media (max-width: 819px) {
+  .nu-ring { max-width: 20rem; }
+  .nu-ring__node { min-width: 4.4rem; padding: 0.4rem 0.5rem 0.45rem; }
+  .nu-ring__node span { font-size: 0.75rem; }
+}

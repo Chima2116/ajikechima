@@ -92,15 +92,37 @@
     }
   });
 
-  // The learning loop lights up one step at a time
-  var loop = page.querySelector('.nu-loop');
-  if (loop) {
-    var lis = loop.querySelectorAll('li'), li = 0, lt = 0;
-    var lightOne = function () { lis.forEach(function (x, k) { x.classList.toggle('is-on', k === li); }); li = (li + 1) % lis.length; };
-    onView(loop, function (v) {
-      clearInterval(lt);
-      if (v) { if (calm) { lis.forEach(function (x) { x.classList.add('is-on'); }); return; } lightOne(); lt = setInterval(lightOne, 1500); }
+  // The learning loop: a ring with Nuri in the middle. It steps by itself while on screen and
+  // not touched; any click takes over. Each step swaps Nuri's face, the text and the real screen.
+  var lp = page.querySelector('[data-nu-loop]');
+  if (lp) {
+    var nodes = lp.querySelectorAll('.nu-ring__node'), panes = lp.querySelectorAll('.nu-loop__pane'), shots2 = lp.querySelectorAll('.nu-win__stack img');
+    var arc = lp.querySelector('[data-nu-arc]'), lnuri = lp.querySelector('[data-nu-loopnuri]'), lurl = lp.querySelector('[data-nu-loopurl]');
+    var C = 2 * Math.PI * 128, at = 0, tm = 0, inView = false, taken = false, hover = false;
+    var go = function (i, user) {
+      var wrapped = i >= nodes.length; at = (i + nodes.length) % nodes.length;
+      nodes.forEach(function (n, k) { n.setAttribute('aria-pressed', k === at ? 'true' : 'false'); });
+      panes.forEach(function (p, k) { p.classList.toggle('is-on', k === at); if (k === at) p.removeAttribute('aria-hidden'); else p.setAttribute('aria-hidden', 'true'); });
+      shots2.forEach(function (s, k) { s.classList.toggle('is-on', k === at); });
+      lurl.textContent = shots2[at].getAttribute('data-url');
+      lnuri.src = NURI + nodes[at].getAttribute('data-e') + '.svg'; pop(lnuri, 'is-in');
+      if (wrapped) { arc.style.transition = 'none'; arc.style.strokeDashoffset = C; void arc.getBoundingClientRect(); arc.style.transition = ''; }
+      arc.style.strokeDashoffset = C * (1 - (at + 1) / nodes.length);
+      if (user) sfx('portrait');
+    };
+    var tick2 = function () { if (inView && !taken && !hover && !calm) go(at + 1); };
+    var run2 = function () { clearInterval(tm); if (!calm && !taken) tm = setInterval(tick2, 3800); };
+    nodes.forEach(function (n, k) {
+      n.addEventListener('click', function () { taken = true; clearInterval(tm); go(k, true); });
+      n.addEventListener('keydown', function (e) {
+        var d = e.key === 'ArrowRight' || e.key === 'ArrowDown' ? 1 : e.key === 'ArrowLeft' || e.key === 'ArrowUp' ? -1 : 0;
+        if (d) { e.preventDefault(); taken = true; clearInterval(tm); var t = (k + d + nodes.length) % nodes.length; go(t, true); nodes[t].focus(); }
+      });
     });
+    lp.addEventListener('pointerenter', function (e) { if (e.pointerType === 'mouse') hover = true; });
+    lp.addEventListener('pointerleave', function () { hover = false; });
+    onView(lp, function (v) { inView = v; if (v) run2(); else clearInterval(tm); });
+    go(0);
   }
 
   // Learning style picker

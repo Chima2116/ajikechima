@@ -154,13 +154,20 @@
       <div class="cs-section__body cs-body">
         <p class="nu-say">Teach it, test it, and give people a reason to come back.</p>
         <p class="nu-long">The redesign turned Nuton into a loop instead of a one-off. Learn how the student understands best, turn their material into a structured course, let them ask a tutor about any passage, check what stuck with quizzes and exams that explain themselves, then reward the habit of showing up. Every part of the learner app hangs off that loop.</p>
-        <ol class="nu-loop" aria-label="The learning loop">
-          <li><b>Personalise</b><span>Two questions on day one</span></li>
-          <li><b>Structure</b><span>Material becomes a course</span></li>
-          <li><b>Tutor</b><span>Nuri explains, on the page</span></li>
-          <li><b>Check</b><span>Quizzes and a final exam</span></li>
-          <li><b>Return</b><span>Streaks, XP and badges</span></li>
-        </ol>
+        <div class="nu-loop" data-nu-loop>
+          <div class="nu-ring" role="group" aria-label="The learning loop, five steps">
+            <svg viewBox="0 0 320 320" aria-hidden="true"><circle class="nu-ring__track" cx="160" cy="160" r="128"/><circle class="nu-ring__arc" cx="160" cy="160" r="128" data-nu-arc/></svg>
+            <img class="nu-ring__nuri" src="../assets/nuton/cs/nuri/curious.svg" alt="" width="343" height="409" data-nu-loopnuri>
+            <button type="button" class="nu-ring__node" style="--x:50.00%;--y:10.00%" aria-pressed="true" data-i="0" data-e="curious"><i>01</i><span>Personalise</span></button><button type="button" class="nu-ring__node" style="--x:88.04%;--y:37.64%" aria-pressed="false" data-i="1" data-e="excited"><i>02</i><span>Structure</span></button><button type="button" class="nu-ring__node" style="--x:73.51%;--y:82.36%" aria-pressed="false" data-i="2" data-e="thinking"><i>03</i><span>Tutor</span></button><button type="button" class="nu-ring__node" style="--x:26.49%;--y:82.36%" aria-pressed="false" data-i="3" data-e="encouraging"><i>04</i><span>Check</span></button><button type="button" class="nu-ring__node" style="--x:11.96%;--y:37.64%" aria-pressed="false" data-i="4" data-e="celebrating"><i>05</i><span>Return</span></button>
+          </div>
+          <div class="nu-loop__side">
+            <div class="nu-loop__panes" aria-live="polite"><div class="nu-loop__pane is-on" data-i="0"><p class="nu-loop__k">01, Two questions on day one</p><p class="nu-loop__h">Ask first, teach second</p><p class="nu-loop__t">Before the first lesson Nuton asks how you prefer to understand new ideas and what kind of tutor you want, then adapts every lesson to match.</p></div><div class="nu-loop__pane" data-i="1" aria-hidden="true"><p class="nu-loop__k">02, Material becomes a course</p><p class="nu-loop__h">Turn anything into a course</p><p class="nu-loop__t">Upload PDFs, slides, videos or audio, or just type a topic, and Nuton builds a structured course you can work through in order.</p></div><div class="nu-loop__pane" data-i="2" aria-hidden="true"><p class="nu-loop__k">03, Nuri explains, on the page</p><p class="nu-loop__h">Ask Nuri about any passage</p><p class="nu-loop__t">Highlight something confusing and Nuri explains it, simplifies it or gives an example, right beside the text you are reading.</p></div><div class="nu-loop__pane" data-i="3" aria-hidden="true"><p class="nu-loop__k">04, Quizzes and a final exam</p><p class="nu-loop__h">Every answer explains itself</p><p class="nu-loop__t">Quizzes and a final exam check what stuck, and every answer, right or wrong, comes with a reason.</p></div><div class="nu-loop__pane" data-i="4" aria-hidden="true"><p class="nu-loop__k">05, Streaks, XP and badges</p><p class="nu-loop__h">A reason to come back tomorrow</p><p class="nu-loop__t">Streaks, XP and badges reward real learning, and Nuri reacts to each milestone.</p></div></div>
+            <figure class="nu-win nu-win--mini">
+              <div class="pj-bar"><span class="pj-dots"><i></i><i></i><i></i></span><span class="pj-url" data-nu-loopurl>nuton.app/onboarding</span></div>
+              <div class="nu-win__stack"><img class="is-on" src="../assets/nuton/cs/onboard-tutor.webp" alt="" width="1600" height="1000" loading="lazy" data-i="0" data-url="nuton.app/onboarding"><img class="" src="../assets/nuton/cs/start.webp" alt="" width="1600" height="1000" loading="lazy" data-i="1" data-url="nuton.app/new"><img class="" src="../assets/nuton/cs/lesson.webp" alt="" width="1600" height="1000" loading="lazy" data-i="2" data-url="nuton.app/lesson"><img class="" src="../assets/nuton/cs/quiz.webp" alt="" width="1600" height="1000" loading="lazy" data-i="3" data-url="nuton.app/quiz"><img class="" src="../assets/nuton/cs/fit-streak.webp" alt="" width="1600" height="1000" loading="lazy" data-i="4" data-url="nuton.app/streak"></div>
+            </figure>
+          </div>
+        </div>
       </div>
     </div>
   </section>
