@@ -463,9 +463,9 @@
       var letters = 'ROCKFALL'.split('').map(function (c, i) { return '<b style="--i:' + i + ';--r:' + ((i % 2 ? 1 : -1) * (6 + i * 2)) + ';--t:' + tilt[i] + ';--y:' + lift[i] + '">' + c + '</b>'; }).join('');
       overlay.innerHTML = '<div class="rf__titlescreen"><p class="rf__logo"><span class="sr-only">ROCKFALL</span><span class="rf__letters" aria-hidden="true">' + letters + '</span></p>' +
         '<p class="rf__headline">One character. Endless falling rocks. How long can you survive?</p>' +
-        '<div class="rf__startgroup"><button type="button" class="rf__play" data-rf-start><span>Let\'s play</span><i aria-hidden="true">&rarr;</i></button>' +
-        '<p class="rf__controls">' + (coarse ? 'Drag your finger' : 'Move with your cursor') + ' &middot; Dodge everything</p></div>' +
-        (Leaderboard.enabled ? '<button type="button" class="rf__lbbtn" data-rf-board><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6 3.5h8v4.2a4 4 0 0 1-8 0zM6 5H3.5c0 2 1 3.4 2.6 3.8M14 5h2.5c0 2-1 3.4-2.6 3.8M10 11.7V15M7 16.5h6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Leaderboard</button>' : '') + '</div>';
+        '<div class="rf__startgroup"><span class="rf__frame"><button type="button" class="rf__go" data-rf-start><span class="rf__face"><span class="rf__txt">Let\'s play</span><i aria-hidden="true">&rarr;</i></span></button></span>' +
+        '<p class="rf__controls">' + (coarse ? 'Drag your finger' : 'Move with your cursor') + ' &middot; <em>Dodge</em> everything</p></div>' +
+        (Leaderboard.enabled ? '<button type="button" class="rf__lb" data-rf-board><span class="rf__face"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6 3.5h8v4.2a4 4 0 0 1-8 0zM6 5H3.5c0 2 1 3.4 2.6 3.8M14 5h2.5c0 2-1 3.4-2.6 3.8M10 11.7V15M7 16.5h6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="rf__txt">Leaderboard</span></span></button>' : '') + '</div>';
       overlay.querySelector('[data-rf-start]').addEventListener('click', start);
       var bb = overlay.querySelector('[data-rf-board]'); if (bb) bb.addEventListener('click', function () { showBoard({ range: 'all', back: overlayReady }); });
     }
