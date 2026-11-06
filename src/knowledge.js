@@ -120,7 +120,7 @@ export const ENTRIES = [
   },
   {
     keys: ["nuton", "newton", "nuton.app", "learning", "tutor", "quiz", "ai learning"],
-    text: "Nuton is an AI learning platform Chimaobi co-founded in November 2024. As co-founder and lead product designer, they designed the whole platform: onboarding, structured lessons, an AI tutor, and quizzes that explain every answer, plus the brand and design system. The engineering was done by the other co-founder.",
+    text: "Nuton is an AI learning platform Chimaobi co-founded in November 2024. As co-founder and lead product designer, they designed the first version and then redesigned it from a document summariser into a study partner: onboarding that asks how you learn, structured lessons, Nuri the AI tutor with 13 expressions, quizzes that explain every answer, and streaks, XP and badges. Chimaobi also built Nuton's design system and a connected prototype in code, with Claude. The production app is engineered by the other co-founder. Nuton has 2,000+ sign-ups and 10,000+ lessons generated.",
     sources: [S.nuton],
   },
   {
