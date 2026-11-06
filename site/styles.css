@@ -1695,3 +1695,49 @@ html.js-anim .cl-item { animation: cl-in 0.95s cubic-bezier(0.2, 0.8, 0.2, 1) bo
 @media (min-width: 1100px) {
   .nu-page .cs-section__body > p.cs-stats__note { grid-column: 1 / -1; }
 }
+
+/* ======== All case studies: the Nuton look ========
+   One type scale (statement 16, paragraph 14, label 14, caption 13), label-left / text-right rows,
+   media breaking out full width, the same panel frame. Applies to every page with .cs-section. */
+.cs-section .cs-body p, .cs-section .cs-body li, .pj-block p { font-size: 0.875rem; line-height: 1.65; }
+.cs-section .cs-body p:not(.cs-cap), .cs-section .cs-body li, .pj-block p { color: color-mix(in srgb, var(--ink) 76%, var(--bg)); }
+.cs-section .cs-body strong { color: var(--ink); }
+.cs-section__label, .pj-h { font-size: 0.875rem; font-weight: 400; line-height: 1.5; color: var(--muted); }
+.cs-decision__title, .cs-step__title { font-size: 1rem; font-weight: 500; line-height: 1.4; letter-spacing: -0.01em; max-width: 36ch; }
+.cs-section figcaption, .cs-stage__cap, .cs-pair__cap, .cs-feat__text { font-size: 0.8125rem; line-height: 1.5; }
+.cs-lede { font-size: 1rem; line-height: 1.6; }
+.cs-fact dt, .cs-fact dd { font-size: 0.875rem; line-height: 1.55; }
+.cs-feature__text p, .cs-feat__text { font-size: 0.875rem; }
+/* one frame radius */
+.cs-media, .cs-stage, .cs-rail, .cs-shot, .cs-hero > .cs-media { border-radius: 16px; }
+
+@media (min-width: 1100px) {
+  /* sections with a label and a body */
+  .cs-section > .grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 38rem); column-gap: clamp(2rem, 6vw, 6rem); align-items: start; }
+  .cs-section > .grid > .cs-section__body { display: contents; }
+  .cs-section > .grid > .cs-section__label { grid-column: 1; grid-row: 1; margin: 0; padding-top: 0.15rem; }
+  .cs-section > .grid > .cs-section__body > * { grid-column: 1 / -1; }
+  .cs-section > .grid > .cs-section__body > p, .cs-section > .grid > .cs-section__body > ul:not(.cs-stats), .cs-section > .grid > .cs-section__body > ol, .cs-section > .grid > .cs-section__body > .cs-type { grid-column: 2; }
+  .cs-section .cs-body p, .cs-section .cs-body ul { max-width: none; }
+  /* decisions: title on the left, text on the right, media below */
+  .cs-body > .cs-decision { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 38rem); column-gap: clamp(2rem, 6vw, 6rem); align-items: start; grid-column: 1 / -1; }
+  .cs-body > .cs-decision > * { grid-column: 1 / -1; }
+  .cs-body > .cs-decision > .cs-decision__title { grid-column: 1; margin: 0; }
+  .cs-body > .cs-decision > p, .cs-body > .cs-decision > ul, .cs-body > .cs-decision > ol { grid-column: 2; }
+  .cs-body > .cs-decision > .cs-decision__title + p { margin-top: 0; }
+  /* project pages (blocks of heading and text) */
+  .cs-section > .pj-copy { max-width: none; gap: clamp(2.25rem, 5vw, 3.25rem); }
+  .pj-block { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 38rem); column-gap: clamp(2rem, 6vw, 6rem); align-items: start; }
+  .pj-block .pj-h { margin: 0; padding-top: 0.15rem; }
+  .pj-block p { max-width: none; }
+  .cs-section > .pj-cta { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 38rem); column-gap: clamp(2rem, 6vw, 6rem); }
+  .cs-section > .pj-cta > .pj-btn { grid-column: 2; justify-self: start; }
+}
+@media (min-width: 1100px) {
+  .cs-body > .cs-split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 38rem); column-gap: clamp(2rem, 6vw, 6rem); align-items: start; grid-column: 1 / -1; }
+  .cs-body > .cs-split .cs-figure { max-width: 20rem; }
+  .cs-body > .cs-decision:first-child { margin-top: 1.5rem; }
+}
+/* project pages: the facts sit right under the title, then the hero image */
+.cs-section:has(> .pj-facts) { padding-block: 0 clamp(1.5rem, 3vw, 2rem); border-top: 0; }
+.cs-hero + .cs-section:has(> .pj-facts) { margin-top: -0.5rem; }
