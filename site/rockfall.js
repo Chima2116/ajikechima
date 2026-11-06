@@ -656,6 +656,13 @@
       seq.forEach(function (n, i) { voice(actx, actx.destination, n[2], n[0], t0 + i * 0.1, n[1], n[3], 0.005); });
     }
     function wakeAudio() { ensureAudio(); if (actx && actx.state === 'suspended' && actx.resume) actx.resume(); }
+    var pauseBtn = root.querySelector('[data-rf-pause]');
+    if (pauseBtn) pauseBtn.addEventListener('click', function () { if (state === 'playing') pause(); else if (state === 'paused') resume(); });
+    document.addEventListener('keydown', function (e) {
+      if (!visible || e.metaKey || e.ctrlKey || e.altKey) return;
+      var tag = (e.target && e.target.tagName) || ''; if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+      if (e.key === 'p' || e.key === 'P' || (e.key === 'Escape' && state === 'playing')) { if (state === 'playing') pause(); else if (state === 'paused') resume(); }
+    });
     function paintSound() { soundBtn.setAttribute('aria-pressed', sound ? 'true' : 'false'); soundBtn.setAttribute('aria-label', sound ? 'Sound on, turn it off' : 'Sound off, turn it on'); }
     paintSound();
     soundBtn.addEventListener('click', function () {
