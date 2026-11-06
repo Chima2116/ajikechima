@@ -204,7 +204,9 @@
       // player eases toward the pointer
       if (state === 'playing' || state === 'ready' || state === 'over') {
         var kf = 1 - Math.exp(-CONFIG.player.follow * dt), ox = p.x;
-        if (state === 'playing') { p.x += (p.tx - p.x) * kf; p.y += (p.ty - p.y) * kf; } else { p.tx = p.x; p.ty = p.y; }
+        if (state === 'playing') { p.x += (p.tx - p.x) * kf; p.y += (p.ty - p.y) * kf; }
+        else if (state === 'ready' && !calm) { demo(dt, kf); }
+        else { p.tx = p.x; p.ty = p.y; }
         p.x = clamp(p.x, 18, W - 18); p.y = clamp(p.y, 18, H - 26);
         p.vx = dt ? (p.x - ox) / dt : 0;
       }
@@ -228,6 +230,18 @@
       if (state === 'hit') { g.hitT -= dt; if (g.hitT <= 0) finish(); }
       g.shake = Math.max(0, g.shake - dt * 2.8); g.flash = Math.max(0, g.flash - dt * 3);
       for (k = fx.length - 1; k >= 0; k--) { var f = fx[k]; f.life -= dt; if (f.life <= 0) { fx.splice(k, 1); continue; } f.vy += 520 * dt; f.x += f.vx * dt; f.y += f.vy * dt; f.rot += f.vr * dt; }
+    }
+    // title screen: rocks fall and the blob dodges them by itself, so it reads as a game before anyone clicks
+    function demo(dt, kf) {
+      var p = g.p, k, push = 0, want = W / 2 + Math.sin(p.t * 0.6) * W * 0.32;
+      g.spawnIn -= dt;
+      if (g.spawnIn <= 0) { spawn(levelAt(14)); g.spawnIn = 0.55 + g.rand() * 0.5; }
+      for (k = 0; k < g.rocks.length; k++) {
+        var o = g.rocks[k], dx = p.x - o.x;
+        if (o.y < p.y && o.y > p.y - H * 0.7 && Math.abs(dx) < o.r + 48) push += (dx >= 0 ? 1 : -1) * (o.r + 60 - Math.abs(dx));
+      }
+      p.tx = clamp(want + push * 3, 30, W - 30); p.ty = p.y;
+      p.x += (p.tx - p.x) * Math.min(1, kf * 0.7);
     }
     function burst(x, y, n, spread, cols) {
       if (calm) n = Math.min(n, 4);
@@ -291,7 +305,7 @@
     function setBoardMode(on) { arena.classList.toggle('is-board', on); }
     function overlayReady() {
       setBoardMode(false); overlay.hidden = false; overlay.className = 'rf__overlay';
-      overlay.innerHTML = '<div class="rf__card"><p class="rf__kicker">Mini game</p><h3 class="rf__title">ROCKFALL</h3><p class="rf__tag">How long can you survive?</p><p class="rf__how">Move your cursor, or drag your finger, to dodge the rocks.</p><button type="button" class="rf__btn" data-rf-start>Start Game</button>' + (Leaderboard.enabled ? '<button type="button" class="rf__ghost" data-rf-board>Leaderboard</button>' : '') + '</div>';
+      overlay.innerHTML = '<div class="rf__card rf__card--title"><span class="rf__badge"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6.2 5.5h7.6a3.7 3.7 0 0 1 3.6 3l.9 4.4a2 2 0 0 1-3.4 1.8l-1.9-2.1H7l-1.9 2.1a2 2 0 0 1-3.4-1.8l.9-4.4a3.7 3.7 0 0 1 3.6-3z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M6.4 8v3M4.9 9.5h3M13.2 9.1h.01M14.9 10.7h.01" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Play a game</span><h3 class="rf__title">ROCKFALL</h3><p class="rf__tag">Dodge the falling rocks. <b>Last as long as you can.</b></p><ul class="rf__keys"><li><i class="rf__ico rf__ico--ptr"></i>Move your mouse or drag your finger</li><li><i class="rf__ico rf__ico--pt"></i>One point for every second you survive</li></ul><button type="button" class="rf__btn rf__btn--play" data-rf-start><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6.5 4.2v11.6a.6.6 0 0 0 .9.5l9-5.8a.6.6 0 0 0 0-1l-9-5.8a.6.6 0 0 0-.9.5z" fill="currentColor"/></svg>Start game</button>' + (Leaderboard.enabled ? '<button type="button" class="rf__ghost" data-rf-board>Leaderboard</button>' : '') + '</div>';
       overlay.querySelector('[data-rf-start]').addEventListener('click', start);
       var bb = overlay.querySelector('[data-rf-board]'); if (bb) bb.addEventListener('click', function () { showBoard({ range: 'all', back: overlayReady }); });
     }
