@@ -102,6 +102,7 @@ a:focus-visible, button:focus-visible {
 .rail__meta { margin-top: 0.6rem; font-family: var(--font-mono); font-size: 0.6875rem; line-height: 1.55; color: var(--muted); }
 .rail__nav { display: none; margin-top: 2rem; }
 .rail__nav a {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 0.6rem;
@@ -112,6 +113,10 @@ a:focus-visible, button:focus-visible {
 }
 .rail__nav a::before {
   content: "";
+  position: absolute;
+  left: -0.95rem;
+  top: 50%;
+  margin-top: -2.5px;
   width: 5px;
   height: 5px;
   border-radius: 50%;
@@ -1658,3 +1663,11 @@ html.js-anim .cl-item { animation: cl-in 0.95s cubic-bezier(0.2, 0.8, 0.2, 1) bo
 .nu-page .nu-quiz__opts button, .nu-page .cs-body .nu-quiz__why, .nu-page .cs-body .nu-streak__msg { font-size: 0.875rem; }
 .nu-page .cs-body .nu-quiz__verdict { font-size: 0.875rem; }
 .nu-page .cs-body .nu-loop__k { font-size: 0.75rem; }
+
+/* Nuton rows: label at the start, text block pushed to the far end, wide gap between */
+@media (min-width: 1100px) {
+  .nu-page .cs-section > .grid { grid-template-columns: minmax(0, 1fr) minmax(0, 38rem); column-gap: clamp(2rem, 6vw, 6rem); }
+  .nu-page .cs-section__body > .nu-say, .nu-page .cs-section__body > .nu-long, .nu-page .cs-section__body > .nu-rowtext, .nu-page .cs-section__body > p.nu-cap, .nu-page .cs-section__body > p.cs-stats__note, .nu-page .cs-section__body > .pj-cta { grid-column: 2; }
+  .nu-page .cs-body p, .nu-page .cs-body ul { max-width: none; }
+  .nu-page .cs-body p.nu-say, .nu-page .cs-body .nu-sub { max-width: 36ch; }
+}
