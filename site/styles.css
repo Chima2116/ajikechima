@@ -1644,3 +1644,17 @@ html.js-anim .cl-item { animation: cl-in 0.95s cubic-bezier(0.2, 0.8, 0.2, 1) bo
   .nu-page .cs-section__body > .nu-rowlabel + .nu-rowtext { margin-top: clamp(2.25rem, 5vw, 3rem); }
   .nu-page .cs-section__body > .nu-say:first-of-type { grid-row: 1; }
 }
+
+/* ---- Nuton case study: type scale, locked ----
+   statement 16px, paragraph 14px, label 14px, caption 13px (unchanged). */
+.nu-page .cs-body p, .nu-page .cs-body li { font-size: 0.875rem; line-height: 1.65; }
+.nu-page .cs-body p.nu-say, .nu-page .cs-body .nu-sub, .nu-page .cs-body .nu-loop__h { font-size: 1rem; line-height: 1.4; letter-spacing: -0.01em; font-weight: 500; max-width: 36ch; }
+.nu-page .cs-body p.nu-cap, .nu-page .cs-body p.cs-stats__note, .nu-page .nu-loopvid figcaption { font-size: 0.8125rem; line-height: 1.5; }
+.nu-page .cs-section__label, .nu-page .nu-rowlabel { font-size: 0.875rem; line-height: 1.5; }
+.nu-page .cs-lede { font-size: 1rem; line-height: 1.6; }
+.nu-page .cs-fact dt, .nu-page .cs-fact dd { font-size: 0.875rem; line-height: 1.55; }
+.nu-page .cs-body p.nu-loop__t, .nu-page .cs-body .nu-style__t, .nu-page .cs-body .nu-style__prev p { font-size: 0.875rem; }
+.nu-page .cs-body .nu-style__h, .nu-page .cs-body .nu-quiz__q, .nu-page .cs-body .nu-nuri__name { font-size: 1rem; }
+.nu-page .nu-quiz__opts button, .nu-page .cs-body .nu-quiz__why, .nu-page .cs-body .nu-streak__msg { font-size: 0.875rem; }
+.nu-page .cs-body .nu-quiz__verdict { font-size: 0.875rem; }
+.nu-page .cs-body .nu-loop__k { font-size: 0.75rem; }
